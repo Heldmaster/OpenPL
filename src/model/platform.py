@@ -1,11 +1,10 @@
 import cv2
-import apriltag
+import pupil_apriltags
 import math
 import logging
 
 import numpy as np
 from typing import Dict, Optional
-
 
 class Platform:
     def __init__(
@@ -15,7 +14,15 @@ class Platform:
         cameraMatrix: np.ndarray,
         logger: logging.Logger,
     ) -> None:
-        self.detector: apriltag.Detector = apriltag.Detector()
+        self.detector: pupil_apriltags.Detector = pupil_apriltags.Detector(
+            families='tag36h11',
+            nthreads=1,
+            quad_decimate=1.0,
+            quad_sigma=0.0,
+            refine_edges=1,
+            decode_sharpening=0.25,
+            debug=0
+        )
         self.tagId = tagId
         self.tagSize = tagSize
         self.cameraMatrix = cameraMatrix
@@ -28,17 +35,17 @@ class Platform:
 
     def getInfo(self, frame: np.ndarray) -> Optional[Dict[str, float]]:
         grayFrame: np.ndarray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        detections: list[apriltag.Detection] = self.detector.detect(grayFrame)
+
+        detections: list[pupil_apriltags.Detection] = self.detector.detect(
+            grayFrame,
+            estimate_tag_pose=True,
+            camera_params=(self.fx, self.fy, self.cx, self.cy),
+            tag_size=self.tagSize
+        )
 
         for detection in detections:
             if detection.tag_id == self.tagId:
-
-                pose: np.ndarray
-                _, pose, _ = self.detector.detection_pose(
-                    detection, (self.fx, self.fy, self.cx, self.cy), self.tagSize
-                )
-
-                translation: np.ndarray = pose[:3, 3]
+                translation: np.ndarray = detection.pose_t
                 distance: float = np.linalg.norm(translation)
 
                 centerX: float = detection.center[0]
