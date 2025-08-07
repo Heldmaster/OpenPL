@@ -1,5 +1,22 @@
+import logging
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.client.mavlink import MavlinkClient
+    from src.model.camera import Camera
+    from src.model.platform import Platform
+    from src.model.strategy.strategy import LandingStrategy
+
+
 class Drone:
-    def __init__(self, mavlinkClient, camera, platform, landingStrategy, logger):
+    def __init__(
+        self,
+        mavlinkClient: 'MavlinkClient',
+        camera: 'Camera',
+        platform: 'Platform',
+        landingStrategy: 'LandingStrategy',
+        logger: logging.Logger
+    ) -> None:
         self.mavlinkClient = mavlinkClient
         self.camera = camera
         self.platform = platform
@@ -8,6 +25,6 @@ class Drone:
         self.logger.info("Drone object initialized.")
 
 
-    def land(self):
+    def land(self) -> None:
         self.mavlinkClient.connect()
         self.landingStrategy.land(self, self.platform, self.mavlinkClient)

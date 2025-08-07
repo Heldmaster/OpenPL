@@ -14,7 +14,7 @@ if __name__ == '__main__':
     logger.info("OpenPL Drone Landing Project Starting Up")
 
     try:
-        cameraMatrix = np.array([
+        cameraMatrix: np.ndarray = np.array([
             [CAMERA_MATRIX['fx'], 0, CAMERA_MATRIX['cx']],
             [0, CAMERA_MATRIX['fy'], CAMERA_MATRIX['cy']],
             [0, 0, 1]

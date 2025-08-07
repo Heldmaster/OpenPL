@@ -1,10 +1,10 @@
 import logging
 
-def setupLogger():
-    logger = logging.getLogger('OpenDLLogger')
+def setupLogger() -> logging.Logger:
+    logger: logging.Logger = logging.getLogger('OpenDLLogger')
     logger.setLevel(logging.INFO)
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler: logging.StreamHandler = logging.StreamHandler()
+    formatter: logging.Formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
 
     if not logger.hasHandlers():
