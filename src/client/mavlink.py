@@ -38,7 +38,6 @@ class MavlinkClient:
                 0,
                 0,
                 0,
-                0,
             )
             self.logger.info(
                 f"Sent LANDING_TARGET message for tag ID {targetNum} at {distance}."
