@@ -1,13 +1,13 @@
 import numpy as np
 
-from cfg.config import CAMERA_MATRIX, CAMERA_INDEX, CONNECTION_STRING, TARGET_TAG_ID, TAG_SIZE_METERS
-from client.mavlink import MavlinkClient
-from model.drone import Drone
-from model.platform import Platform
-from model.camera import Camera
-from model.strategy.mavlink import MavlinkLandingStrategy
-from internal.exception import CameraError, MavlinkConnectionError
-from internal.logger.logger import setupLogger
+from src.cfg.config import CAMERA_MATRIX, CAMERA_INDEX, CONNECTION_STRING, TARGET_TAG_ID, TAG_SIZE_METERS
+from src.client.mavlink import MavlinkClient
+from src.model.drone import Drone
+from src.model.platform import Platform
+from src.model.camera import Camera
+from src.model.strategy.mavlink import MavlinkLandingStrategy
+from src.internal.exception import CameraError, MavlinkConnectionError
+from src.internal.logger.logger import setupLogger
 
 if __name__ == '__main__':
     logger = setupLogger()

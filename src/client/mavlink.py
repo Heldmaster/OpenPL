@@ -1,6 +1,6 @@
 from pymavlink import mavutil
 
-from internal.exception.exception import MavlinkConnectionError
+from src.internal.exception.exception import MavlinkConnectionError
 
 
 class MavlinkClient:

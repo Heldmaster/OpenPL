@@ -1,6 +1,6 @@
 import cv2
 
-from internal.exception import CameraError
+from src.internal.exception import CameraError
 
 
 class Camera:

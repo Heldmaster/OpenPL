@@ -1,7 +1,7 @@
 import time
 
-from model.strategy.strategy import LandingStrategy
-from cfg.config import REFRESH_RATE_SECONDS
+from src.model.strategy.strategy import LandingStrategy
+from src.cfg.config import REFRESH_RATE_SECONDS
 
 
 class MavlinkLandingStrategy(LandingStrategy):

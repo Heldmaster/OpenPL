@@ -1,2 +1,2 @@
 run :
-	@python -m main;
+	@python -m src.cmd.main;
