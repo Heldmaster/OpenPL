@@ -1,5 +1,6 @@
 import logging
 from typing import TYPE_CHECKING
+from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
     from src.client.mavlink import MavlinkClient
@@ -8,7 +9,13 @@ if TYPE_CHECKING:
     from src.model.strategy.strategy import LandingStrategy
 
 
-class Drone:
+class Vehicle(ABC):
+    @abstractmethod
+    def land(self) -> None:
+        pass
+
+
+class Drone(Vehicle):
     def __init__(
         self,
         mavlinkClient: 'MavlinkClient',
