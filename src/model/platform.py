@@ -8,7 +8,13 @@ from typing import Dict, Optional
 
 
 class Platform:
-    def __init__(self, tagId: int, tagSize: float, cameraMatrix: np.ndarray, logger: logging.Logger) -> None:
+    def __init__(
+        self,
+        tagId: int,
+        tagSize: float,
+        cameraMatrix: np.ndarray,
+        logger: logging.Logger,
+    ) -> None:
         self.detector: apriltag.Detector = apriltag.Detector()
         self.tagId = tagId
         self.tagSize = tagSize
@@ -20,7 +26,6 @@ class Platform:
         self.cx: float = self.cameraMatrix[0, 2]
         self.cy: float = self.cameraMatrix[1, 2]
 
-
     def getInfo(self, frame: np.ndarray) -> Optional[Dict[str, float]]:
         grayFrame: np.ndarray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         detections: list[apriltag.Detection] = self.detector.detect(grayFrame)
@@ -30,9 +35,7 @@ class Platform:
 
                 pose: np.ndarray
                 _, pose, _ = self.detector.detection_pose(
-                    detection,
-                    (self.fx, self.fy, self.cx, self.cy),
-                    self.tagSize
+                    detection, (self.fx, self.fy, self.cx, self.cy), self.tagSize
                 )
 
                 translation: np.ndarray = pose[:3, 3]
@@ -47,7 +50,7 @@ class Platform:
                     "tagId": detection.tag_id,
                     "angleX": angleX,
                     "angleY": angleY,
-                    "distance": distance
+                    "distance": distance,
                 }
 
         return None

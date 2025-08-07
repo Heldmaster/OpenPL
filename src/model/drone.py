@@ -18,11 +18,11 @@ class Vehicle(ABC):
 class Drone(Vehicle):
     def __init__(
         self,
-        mavlinkClient: 'MavlinkClient',
-        camera: 'Camera',
-        platform: 'Platform',
-        landingStrategy: 'LandingStrategy',
-        logger: logging.Logger
+        mavlinkClient: "MavlinkClient",
+        camera: "Camera",
+        platform: "Platform",
+        landingStrategy: "LandingStrategy",
+        logger: logging.Logger,
     ) -> None:
         self.mavlinkClient = mavlinkClient
         self.camera = camera
@@ -30,7 +30,6 @@ class Drone(Vehicle):
         self.landingStrategy = landingStrategy
         self.logger = logger
         self.logger.info("Drone object initialized.")
-
 
     def land(self) -> None:
         self.mavlinkClient.connect()

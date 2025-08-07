@@ -11,7 +11,6 @@ class MavlinkClient:
         self.logger = logger
         self.master: Optional[mavutil.mavlink_connection] = None
 
-
     def connect(self) -> None:
         self.logger.info(f"Connecting to the drone: {self.connStr}...")
         try:
@@ -20,10 +19,13 @@ class MavlinkClient:
             self.logger.info("Heartbeat received. Connection established.")
         except Exception as e:
             self.logger.critical(f"Failed to connect to drone: {e}")
-            raise MavlinkConnectionError(f"Failed to connect to drone via {self.connStr}") from e
+            raise MavlinkConnectionError(
+                f"Failed to connect to drone via {self.connStr}"
+            ) from e
 
-
-    def sendLandingTargetMessage(self, timeUs: int, targetNum: int, angleX: float, angleY: float, distance: float) -> None:
+    def sendLandingTargetMessage(
+        self, timeUs: int, targetNum: int, angleX: float, angleY: float, distance: float
+    ) -> None:
         if self.master is not None:
             self.master.mav.landing_target_send(
                 timeUs,
@@ -36,13 +38,14 @@ class MavlinkClient:
                 0,
                 0,
                 0,
-                0
+                0,
             )
-            self.logger.info(f"Sent LANDING_TARGET message for tag ID {targetNum} at {distance}.")
+            self.logger.info(
+                f"Sent LANDING_TARGET message for tag ID {targetNum} at {distance}."
+            )
         else:
             self.logger.error("Error: Not connected to the drone.")
             return
-
 
     def landCommand(self) -> None:
         if self.master is not None:
@@ -50,7 +53,14 @@ class MavlinkClient:
                 self.master.target_system,
                 self.master.target_component,
                 mavutil.mavlink.MAV_CMD_NAV_LAND,
-                0, 0, 0, 0, 0, 0, 0, 0
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
             )
             self.logger.info("Sent land command to the drone.")
         else:

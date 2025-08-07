@@ -13,5 +13,7 @@ class LandingStrategy(ABC):
         self.logger = logger
 
     @abstractmethod
-    def land(self, drone: 'Drone', platform: 'Platform', mavlinkClient: 'MavlinkClient') -> None:
+    def land(
+        self, drone: "Drone", platform: "Platform", mavlinkClient: "MavlinkClient"
+    ) -> None:
         pass

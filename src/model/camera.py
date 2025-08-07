@@ -15,13 +15,11 @@ class Camera:
             self.logger.error("Cannot open camera.")
             raise CameraError(f"Cannot open camera at index {self.cameraIndex}.")
 
-
     def getFrame(self) -> Tuple[bool, np.ndarray]:
         ret: bool
         frame: np.ndarray
         ret, frame = self.cap.read()
         return ret, frame
-
 
     def __del__(self) -> None:
         if self.cap.isOpened():

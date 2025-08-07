@@ -17,8 +17,9 @@ class MavlinkLandingStrategy(LandingStrategy):
         super().__init__(logger)
         self.logger.info("Precision Landing Strategy initialized.")
 
-
-    def land(self, drone: 'Drone', platform: 'Platform', mavlinkClient: 'MavlinkClient') -> None:
+    def land(
+        self, drone: "Drone", platform: "Platform", mavlinkClient: "MavlinkClient"
+    ) -> None:
         self.logger.info("Executing precision landing strategy...")
         mavlinkClient.landCommand()
 
@@ -37,10 +38,10 @@ class MavlinkLandingStrategy(LandingStrategy):
                 timeUs: int = int(time.time() * 1e6)
                 mavlinkClient.sendLandingTargetMessage(
                     timeUs,
-                    int(tagInfo['tagId']),
-                    tagInfo['angleX'],
-                    tagInfo['angleY'],
-                    tagInfo['distance']
+                    int(tagInfo["tagId"]),
+                    tagInfo["angleX"],
+                    tagInfo["angleY"],
+                    tagInfo["distance"],
                 )
             else:
                 self.logger.info("No AprilTag detected.")
