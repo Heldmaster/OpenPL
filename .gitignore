@@ -1,3 +1,4 @@
 *.log
 *.tmp
 *.code-workspace
+__pycache__
