@@ -23,7 +23,7 @@ class MavlinkClient:
                 f"Failed to connect to drone via {self.connStr}"
             ) from e
 
-    def sendLandingTargetMessage(
+    def updateLandingTarget(
         self, timeUs: int, targetNum: int, angleX: float, angleY: float, distance: float
     ) -> None:
         if self.master is not None:
@@ -47,7 +47,7 @@ class MavlinkClient:
             self.logger.error("Error: Not connected to the drone.")
             return
 
-    def landCommand(self) -> None:
+    def initiateLanding(self) -> None:
         if self.master is not None:
             self.master.mav.command_long_send(
                 self.master.target_system,

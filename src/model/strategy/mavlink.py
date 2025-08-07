@@ -21,7 +21,7 @@ class MavlinkLandingStrategy(LandingStrategy):
         self, drone: "Drone", platform: "Platform", mavlinkClient: "MavlinkClient"
     ) -> None:
         self.logger.info("Executing precision landing strategy...")
-        mavlinkClient.landCommand()
+        mavlinkClient.initiateLanding()
 
         while True:
             ret: bool
@@ -36,7 +36,7 @@ class MavlinkLandingStrategy(LandingStrategy):
             if tagInfo:
                 self.logger.info(f"AprilTag with ID {tagInfo['tagId']} detected.")
                 timeUs: int = int(time.time() * 1e6)
-                mavlinkClient.sendLandingTargetMessage(
+                mavlinkClient.updateLandingTarget(
                     timeUs,
                     int(tagInfo["tagId"]),
                     tagInfo["angleX"],
