@@ -53,7 +53,7 @@ class MavlinkClient:
                 self.master.target_component,
                 mavutil.mavlink.MAV_CMD_NAV_LAND,
                 0,
-                0,
+                2,
                 0,
                 0,
                 0,
