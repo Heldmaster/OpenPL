@@ -6,6 +6,7 @@ import logging
 import numpy as np
 from typing import Dict, Optional, List, Tuple
 
+
 class Platform:
     def __init__(
         self,
@@ -15,13 +16,13 @@ class Platform:
         logger: logging.Logger,
     ) -> None:
         self.detector: pupil_apriltags.Detector = pupil_apriltags.Detector(
-            families='tag36h11',
+            families="tag36h11",
             nthreads=1,
             quad_decimate=1.0,
             quad_sigma=0.0,
             refine_edges=1,
             decode_sharpening=0.25,
-            debug=0
+            debug=0,
         )
         self.tagId = tagId
         self.tagSize = tagSize
@@ -40,7 +41,7 @@ class Platform:
             grayFrame,
             estimate_tag_pose=True,
             camera_params=(self.fx, self.fy, self.cx, self.cy),
-            tag_size=self.tagSize
+            tag_size=self.tagSize,
         )
 
         for detection in detections:
@@ -52,7 +53,7 @@ class Platform:
                 centerY: float = detection.center[1]
                 angleX: float = math.atan((centerX - self.cx) / self.fx)
                 angleY: float = math.atan((centerY - self.cy) / self.fy)
-                corners: list[list[float]] = detection.corners.tolist() 
+                corners: list[list[float]] = detection.corners.tolist()
 
                 return {
                     "tagId": detection.tag_id,

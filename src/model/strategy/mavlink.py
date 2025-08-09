@@ -9,10 +9,10 @@ if TYPE_CHECKING:
     from src.client.mavlink import MavlinkClient
 
 from src.model.strategy.strategy import LandingStrategy
-from src.internal.debug.debugdrawer import DebugDrawer
+from internal.debug.drawer import DebugDrawer
 from src.cfg.config import (
-    REFRESH_RATE_SECONDS, 
-    MAX_LANDING_TIME_SECONDS, 
+    REFRESH_RATE_SECONDS,
+    MAX_LANDING_TIME_SECONDS,
     HEIGHT_THRESHOLD_METERS,
     SIMULATION_MODE,
 )
@@ -68,7 +68,7 @@ class MavlinkLandingStrategy(LandingStrategy):
                     break
             else:
                 self.logger.info("No AprilTag detected.")
-            
+
             if SIMULATION_MODE and self.debug_drawer:
                 self.debug_drawer.show_frame(debug_frame)
 

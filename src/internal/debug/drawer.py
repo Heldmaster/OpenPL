@@ -2,13 +2,16 @@ import cv2
 import numpy as np
 from typing import Optional, Dict
 
+
 class DebugDrawer:
     def __init__(self, window_name: str = "DebugDraw") -> None:
         self._window_name = window_name
         cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
         cv2.resizeWindow(window_name, 800, 600)
 
-    def draw(self, frame: np.ndarray, tagInfo: Optional[Dict[str, float]] = None) -> np.ndarray:
+    def draw(
+        self, frame: np.ndarray, tagInfo: Optional[Dict[str, float]] = None
+    ) -> np.ndarray:
         debug_frame = frame.copy()
 
         if tagInfo:
@@ -26,7 +29,7 @@ class DebugDrawer:
                 )
 
         return debug_frame
-    
+
     def show_frame(self, frame: np.ndarray) -> None:
         cv2.imshow(self._window_name, frame)
         cv2.waitKey(1)
