@@ -32,5 +32,4 @@ class Drone(Vehicle):
         self.logger.info("Drone object initialized.")
 
     def land(self) -> None:
-        self.mavlinkClient.connect()
         self.landingStrategy.land(self, self.platform, self.mavlinkClient)

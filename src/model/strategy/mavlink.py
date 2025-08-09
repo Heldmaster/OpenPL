@@ -9,7 +9,11 @@ if TYPE_CHECKING:
     from src.client.mavlink import MavlinkClient
 
 from src.model.strategy.strategy import LandingStrategy
-from src.cfg.config import REFRESH_RATE_SECONDS, MAX_LANDING_TIME_SECONDS, HEIGHT_THRESHOLD_METERS
+from src.cfg.config import (
+    REFRESH_RATE_SECONDS,
+    MAX_LANDING_TIME_SECONDS,
+    HEIGHT_THRESHOLD_METERS,
+)
 
 
 class MavlinkLandingStrategy(LandingStrategy):
@@ -21,11 +25,8 @@ class MavlinkLandingStrategy(LandingStrategy):
         self, drone: "Drone", platform: "Platform", mavlinkClient: "MavlinkClient"
     ) -> None:
         self.logger.info("Executing precision landing strategy...")
-        mavlinkClient.initiateLanding()
-        time.sleep(REFRESH_RATE_SECONDS)
 
-        start_time: float = time.time()
-        while time.time() - start_time < MAX_LANDING_TIME_SECONDS:
+        while mavlinkClient.isLanding:
             ret: bool
             frame: np.ndarray
             ret, frame = drone.camera.getFrame()
@@ -53,8 +54,3 @@ class MavlinkLandingStrategy(LandingStrategy):
                 self.logger.info("No AprilTag detected.")
 
             time.sleep(REFRESH_RATE_SECONDS)
-
-        if time.time() - start_time >= MAX_LANDING_TIME_SECONDS:
-            self.logger.error("Landing timed out. Could not find or land on target.")
-        else:
-            self.logger.info("Landing strategy finished successfully.")

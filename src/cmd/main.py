@@ -32,16 +32,21 @@ if __name__ == "__main__":
         platform = Platform(TARGET_TAG_ID, TAG_SIZE_METERS, cameraMatrix, logger)
         landingStrategy = MavlinkLandingStrategy(logger)
 
-        with Camera(CAMERA_INDEX, logger) as camera:
-            drone = Drone(
-                mavlinkClient=mavlinkClient,
-                camera=camera,
-                platform=platform,
-                landingStrategy=landingStrategy,
-                logger=logger,
-            )
+        mavlinkClient.connect()
 
-            drone.land()
+        while True:
+            if mavlinkClient.isLanding:
+
+                with Camera(CAMERA_INDEX, logger) as camera:
+                    drone = Drone(
+                        mavlinkClient=mavlinkClient,
+                        camera=camera,
+                        platform=platform,
+                        landingStrategy=landingStrategy,
+                        logger=logger,
+                    )
+
+                    drone.land()
 
     except CameraError as e:
         logger.critical(f"A camera-related error occurred: {e}")
