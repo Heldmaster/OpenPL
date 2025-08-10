@@ -22,3 +22,7 @@ TAG_SIZE_METERS: float = 0.16  # IRL size of the AprilTag (in meters)
 REFRESH_RATE_SECONDS: float = 0.1
 MAX_LANDING_TIME_SECONDS: float = 60.0
 HEIGHT_THRESHOLD_METERS: float = 0.1
+
+
+# Simualtion mode settings
+SIMULATION_MODE: bool = True

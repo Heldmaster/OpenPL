@@ -4,7 +4,7 @@ import math
 import logging
 
 import numpy as np
-from typing import Dict, Optional
+from typing import Dict, Optional, List, Tuple
 
 
 class Platform:
@@ -53,12 +53,14 @@ class Platform:
                 centerY: float = detection.center[1]
                 angleX: float = math.atan((centerX - self.cx) / self.fx)
                 angleY: float = math.atan((centerY - self.cy) / self.fy)
+                corners: list[list[float]] = detection.corners.tolist()
 
                 return {
                     "tagId": detection.tag_id,
                     "angleX": angleX,
                     "angleY": angleY,
                     "distance": distance,
+                    "corners": corners,
                 }
 
         return None
