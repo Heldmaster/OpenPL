@@ -35,4 +35,4 @@ class DebugDrawer:
         cv2.waitKey(1)
 
     def close(self) -> None:
-        cv2.destroyWindow(self._window_name)
+        cv2.destroyAllWindows()

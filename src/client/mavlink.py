@@ -56,7 +56,9 @@ class MavlinkClient:
                 self._last_mission_command = item_msg.command
 
         # TODO return True only if precland is enabled in MAV_CMD_NAV_LAND, idk how to check param2 properly :(
-        if self._armed and (self._last_mode == "LAND" or self._last_mission_command == 21):
+        if self._armed and (
+            self._last_mode == "LAND" or self._last_mission_command == 21
+        ):
             return True
         else:
             return False

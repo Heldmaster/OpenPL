@@ -32,22 +32,21 @@ class MavlinkLandingStrategy(LandingStrategy):
             self.debug_drawer = DebugDrawer()
 
         while mavlinkClient.isLanding:
-            ret: bool
-            frame: np.ndarray
-            ret, frame = drone.camera.getFrame()
-            if not ret:
-                self.logger.warning("Could not get frame from camera.")
-                continue
 
             if SIMULATION_MODE and self.debug_drawer:
+                _, frame = drone.camera.getFrame()
                 debug_frame = self.debug_drawer.draw(frame, None)
 
-            tagInfo: dict[str, float] | None = platform.getInfo(frame)
+            tagInfo: dict[str, float] | None = platform.getInfo(drone.camera)
 
             if tagInfo:
                 self.logger.info(f"AprilTag with ID {tagInfo['tagId']} detected.")
 
                 if SIMULATION_MODE and self.debug_drawer:
+                    ok, frame = drone.camera.getFrame()
+                    if not ok:
+                        self.logger.warning("Failed to get frame for debugging.")
+                        continue
                     debug_frame = self.debug_drawer.draw(frame, tagInfo)
 
                 timeUs: int = int(time.time() * 1e6)
