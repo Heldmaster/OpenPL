@@ -32,6 +32,11 @@ class MavlinkLandingStrategy(LandingStrategy):
             self.debug_drawer = DebugDrawer()
 
         while mavlinkClient.isLanding:
+
+            if SIMULATION_MODE and self.debug_drawer:
+                _, frame = drone.camera.getFrame()
+                debug_frame = self.debug_drawer.draw(frame, None)
+
             tagInfo: dict[str, float] | None = platform.getInfo(drone.camera)
 
             if tagInfo:
