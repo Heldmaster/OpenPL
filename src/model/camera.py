@@ -30,3 +30,4 @@ class Camera:
     def _del(self) -> None:
         if self.cap.isOpened():
             self.cap.release()
+        self.logger.info("Camera capture closed.")
