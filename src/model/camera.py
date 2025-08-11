@@ -7,8 +7,11 @@ from src.internal.exception import CameraError
 
 
 class Camera:
-    def __init__(self, cameraIndex: int, logger: logging.Logger) -> None:
+    def __init__(
+        self, cameraIndex: int, cameraMatrix: np.ndarray, logger: logging.Logger
+    ) -> None:
         self.cameraIndex = cameraIndex
+        self.cameraMatrix = cameraMatrix
         self.logger = logger
         self.cap: cv2.VideoCapture = cv2.VideoCapture(self.cameraIndex)
         if not self.cap.isOpened():
@@ -31,3 +34,6 @@ class Camera:
         if self.cap.isOpened():
             self.cap.release()
         self.logger.info("Camera capture closed.")
+
+    def getCameraMatrix(self) -> np.ndarray:
+        return self.cameraMatrix
