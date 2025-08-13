@@ -2,11 +2,22 @@ import cv2
 import numpy as np
 import logging
 from typing import Tuple
+from abc import ABC, abstractmethod
 
 from src.internal.exception import CameraError
 
 
-class Camera:
+class Camera(ABC):
+    @abstractmethod
+    def getFrame(self) -> Tuple[bool, np.ndarray]:
+        pass
+
+    @abstractmethod
+    def getCameraMatrix(self) -> np.ndarray:
+        pass
+
+
+class DefaultCamera(Camera):
     def __init__(
         self, cameraIndex: int, cameraMatrix: np.ndarray, logger: logging.Logger
     ) -> None:
@@ -37,3 +48,7 @@ class Camera:
 
     def getCameraMatrix(self) -> np.ndarray:
         return self.cameraMatrix
+
+
+class VirtualCamera(Camera):
+    pass

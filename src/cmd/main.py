@@ -10,7 +10,7 @@ from src.cfg.config import (
 from src.client.mavlink import MavlinkClient
 from src.model.drone import Drone
 from src.model.platform import AprilTagPlatform
-from src.model.camera import Camera
+from src.model.camera import DefaultCamera
 from src.model.strategy.mavlink import MavlinkLandingStrategy
 from src.internal.exception import CameraError, MavlinkConnectionError
 from src.internal.logger.logger import setupLogger
@@ -37,10 +37,10 @@ if __name__ == "__main__":
         while True:
             if mavlinkClient.isLanding:
 
-                with Camera(CAMERA_INDEX, cameraMatrix, logger) as camera:
+                with DefaultCamera(CAMERA_INDEX, cameraMatrix, logger) as defaultCamera:
                     drone = Drone(
                         mavlinkClient=mavlinkClient,
-                        camera=camera,
+                        camera=defaultCamera,
                         platform=platform,
                         landingStrategy=landingStrategy,
                         logger=logger,
