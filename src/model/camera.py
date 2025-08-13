@@ -51,4 +51,4 @@ class DefaultCamera(Camera):
 
 
 class VirtualCamera(Camera):
-    pass
+    pass #!
