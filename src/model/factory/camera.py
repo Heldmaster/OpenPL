@@ -17,20 +17,20 @@ class StreamCameraReader(CameraReader):
 
 class DefaultCameraReader(StreamCameraReader):
     def __init__(self, path: str, logger: logging.Logger) -> None:
-        pass #!
+        pass  #!
 
     def read(self) -> Camera:
         # parse params here #!
-        return DefaultCamera() # params here
+        return DefaultCamera()  # params here
 
 
 class VirtualCameraReader(StreamCameraReader):
     def __init__(self, path: str, logger: logging.Logger) -> None:
-        pass #!
+        pass  #!
 
     def read(self) -> Camera:
         # parse params here #!
-        return VirtualCamera() # params here
+        return VirtualCamera()  # params here
 
 
 class AbstractCameraFactory(ABC):
