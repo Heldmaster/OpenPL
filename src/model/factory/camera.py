@@ -20,6 +20,6 @@ class StreamCameraFactory(AbstractCameraFactory):
         if type == "default":
             return DefaultCamera(config["camera"]["index"], camera_matrix, logger)
         elif type == "imagezmq":
-            return ImageZMQCamera()
+            return ImageZMQCamera(config["camera"]["imagezmq_listen_uri"], camera_matrix, logger)
         else:
             raise CameraError(f"Unknown camera type: {type}")

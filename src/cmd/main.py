@@ -47,6 +47,7 @@ if __name__ == "__main__":
                         platform=platform,
                         landingStrategy=landingStrategy,
                         logger=logger,
+                        config=config,
                     )
 
                     drone.land()

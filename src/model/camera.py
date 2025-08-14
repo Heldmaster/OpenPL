@@ -78,11 +78,13 @@ class ImageZMQCamera(Camera):
     def getFrame(self) -> Tuple[bool, np.ndarray]:
         ret: bool
         frame: np.ndarray
-        _, frame = self.mage_hub.recv_image()
+        _, frame = self.image_hub.recv_image()
 
         # Minimal frame validation
         if frame is None or frame.size == 0:
             ret = False
+        else:
+            ret = True
 
         return ret, frame
 
