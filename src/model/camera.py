@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import imagezmq
 import logging
 from typing import Tuple
 from abc import ABC, abstractmethod
@@ -50,5 +51,43 @@ class DefaultCamera(Camera):
         return self.cameraMatrix
 
 
-class VirtualCamera(Camera):
-    pass  #!
+class ImageZMQCamera(Camera):
+    def __init__(
+        self, listen_uri: str, cameraMatrix: np.ndarray, logger: logging.Logger
+    ) -> None:
+        self.listen_uri = listen_uri
+        self.cameraMatrix = cameraMatrix
+        self.logger = logger
+
+        try:
+            self.image_hub = imagezmq.ImageHub(open_port=self.listen_uri, REQ_REP=False)
+        except Exception as e:
+            self.logger.error(
+                f"Couldn't initialize ImageZMQ's ImageHub ({self.listen_uri})"
+            )
+            raise CameraError(
+                f"Couldn't initialize ImageZMQ's ImageHub ({self.listen_uri}): {e}"
+            )
+
+    def __enter__(self) -> "Camera":
+        return self
+
+    def __exit__(self, exc_type, exc, exc_tb) -> None:
+        self._del()
+
+    def getFrame(self) -> Tuple[bool, np.ndarray]:
+        ret: bool
+        frame: np.ndarray
+        _, frame = self.mage_hub.recv_image()
+
+        # Minimal frame validation
+        if frame is None or frame.size == 0:
+            ret = False
+
+        return ret, frame
+
+    def _del(self) -> None:
+        self.logger.info("Camera capture closed.")
+
+    def getCameraMatrix(self) -> np.ndarray:
+        return self.cameraMatrix

@@ -3,11 +3,11 @@ import numpy as np
 from src.client.mavlink import MavlinkClient
 from src.model.drone import Drone
 from src.model.platform import AprilTagPlatform
-from src.model.camera import DefaultCamera
 from src.model.strategy.mavlink import MavlinkLandingStrategy
 from src.internal.exception import CameraError, MavlinkConnectionError
 from src.internal.logger.logger import setupLogger
 from src.internal.config.parser import FileConfigParserFactory
+from src.model.factory.camera import StreamCameraFactory
 
 if __name__ == "__main__":
     logger = setupLogger()
@@ -36,12 +36,14 @@ if __name__ == "__main__":
         while True:
             if mavlinkClient.isLanding:
 
-                with DefaultCamera(
-                    config["camera"]["index"], cameraMatrix, logger
-                ) as defaultCamera:
+                camera = StreamCameraFactory.create(
+                    config["camera"]["type"], logger, cameraMatrix, config
+                )
+
+                with camera as cam:
                     drone = Drone(
                         mavlinkClient=mavlinkClient,
-                        camera=defaultCamera,
+                        camera=cam,
                         platform=platform,
                         landingStrategy=landingStrategy,
                         logger=logger,
