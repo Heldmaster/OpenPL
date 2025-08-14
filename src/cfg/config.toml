@@ -1,0 +1,27 @@
+[connection]
+string = "udp:127.0.0.1:14550"
+
+[camera]
+type = "default"
+index = 0
+
+[camera_matrix]
+# Focal length
+fx = 800.0
+fy = 800.0
+
+# Optical center
+cx = 320.0
+cy = 240.0
+
+[apriltag]
+target_tag_id = 1
+tag_size = 0.16
+
+[landing]
+refresh_rate_seconds = 0.1
+max_landing_time_seconds = 60.0
+height_threshold = 0.1
+
+[debug]
+drawer_enabled = true
