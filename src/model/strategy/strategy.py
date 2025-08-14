@@ -20,6 +20,5 @@ class LandingStrategy(ABC):
         mavlinkClient: "MavlinkClient",
         refresh_rate: float,
         height_threshold: float,
-        debug_draw_enabled: bool,
     ) -> None:
         pass

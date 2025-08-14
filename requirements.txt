@@ -2,4 +2,5 @@ pymavlink
 opencv-python
 pupil-apriltags
 black
+toml
 imagezmq

@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import imagezmq
 import logging
+import threading
 from typing import Tuple
 from abc import ABC, abstractmethod
 
@@ -25,6 +26,9 @@ class DefaultCamera(Camera):
         self.cameraIndex = cameraIndex
         self.cameraMatrix = cameraMatrix
         self.logger = logger
+
+        self._lock = threading.Lock()
+
         self.cap: cv2.VideoCapture = cv2.VideoCapture(self.cameraIndex)
         if not self.cap.isOpened():
             self.logger.error("Cannot open camera.")
@@ -37,10 +41,11 @@ class DefaultCamera(Camera):
         self._del()
 
     def getFrame(self) -> Tuple[bool, np.ndarray]:
-        ret: bool
-        frame: np.ndarray
-        ret, frame = self.cap.read()
-        return ret, frame
+        with self._lock:
+            ret: bool
+            frame: np.ndarray
+            ret, frame = self.cap.read()
+            return ret, frame
 
     def _del(self) -> None:
         if self.cap.isOpened():
@@ -59,6 +64,8 @@ class ImageZMQCamera(Camera):
         self.cameraMatrix = cameraMatrix
         self.logger = logger
 
+        self._lock = threading.Lock()
+
         try:
             self.image_hub = imagezmq.ImageHub(open_port=self.listen_uri, REQ_REP=False)
         except Exception as e:
@@ -76,17 +83,18 @@ class ImageZMQCamera(Camera):
         self._del()
 
     def getFrame(self) -> Tuple[bool, np.ndarray]:
-        ret: bool
-        frame: np.ndarray
-        _, frame = self.image_hub.recv_image()
+        with self._lock():
+            ret: bool
+            frame: np.ndarray
+            _, frame = self.image_hub.recv_image()
 
-        # Minimal frame validation
-        if frame is None or frame.size == 0:
-            ret = False
-        else:
-            ret = True
+            # Minimal frame validation
+            if frame is None or frame.size == 0:
+                ret = False
+            else:
+                ret = True
 
-        return ret, frame
+            return ret, frame
 
     def _del(self) -> None:
         self.logger.info("Camera capture closed.")

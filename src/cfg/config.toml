@@ -3,6 +3,7 @@ string = "udp:127.0.0.1:14550"
 
 [camera]
 type = "default"
+streamer_type = "imagezmq"
 index = 0
 imagezmq_listen_uri = "tcp://127.0.0.1:5555"
 
@@ -25,4 +26,4 @@ max_landing_time_seconds = 60.0
 height_threshold = 0.1
 
 [debug]
-drawer_enabled = true
+drawer_enabled = false

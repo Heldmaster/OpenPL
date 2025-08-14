@@ -40,5 +40,4 @@ class Drone(Vehicle):
             self.mavlinkClient,
             self.config["landing"]["refresh_rate_seconds"],
             self.config["landing"]["height_threshold"],
-            self.config["debug"]["drawer_enabled"],
         )
