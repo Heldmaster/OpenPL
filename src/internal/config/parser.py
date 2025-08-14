@@ -4,10 +4,12 @@ import toml
 
 from src.internal.exception import ApplicationError
 
+
 class ConfigParser(ABC):
     @abstractmethod
-    def parse(self) -> dict:
+    def parse(self, path) -> dict:
         pass
+
 
 class TomlConfigParser(ConfigParser):
     def __init__(self, logger: logging.Logger) -> None:
@@ -26,15 +28,19 @@ class TomlConfigParser(ConfigParser):
         except toml.TomlDecodeError:
             self.logger.critical(f"Invalid TOML configuration file at {path}")
         except Exception as e:
-            self.logger.critical(f"Got an unknown error while parsing TOML configuration file: {e}")
+            self.logger.critical(
+                f"Got an unknown error while parsing TOML configuration file: {e}"
+            )
+
 
 class AbstractConfigParserFactory(ABC):
     @abstractmethod
     def create(self, type: str, logger: logging.Logger) -> ConfigParser:
         pass
 
+
 class FileConfigParserFactory(ABC):
-    @staticmethod
+    @classmethod
     def create(self, type: str, logger: logging.Logger) -> ConfigParser:
         if type == "toml":
             return TomlConfigParser(logger)

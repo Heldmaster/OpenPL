@@ -14,6 +14,12 @@ class LandingStrategy(ABC):
 
     @abstractmethod
     def land(
-        self, drone: "Drone", platform: "Platform", mavlinkClient: "MavlinkClient"
+        self,
+        drone: "Drone",
+        platform: "Platform",
+        mavlinkClient: "MavlinkClient",
+        refresh_rate: float,
+        height_threshold: float,
+        debug_draw_enabled: bool,
     ) -> None:
         pass

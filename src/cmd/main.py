@@ -1,12 +1,5 @@
 import numpy as np
 
-from src.cfg.config import (
-    CAMERA_MATRIX,
-    CAMERA_INDEX,
-    CONNECTION_STRING,
-    TARGET_TAG_ID,
-    TAG_SIZE_METERS,
-)
 from src.client.mavlink import MavlinkClient
 from src.model.drone import Drone
 from src.model.platform import AprilTagPlatform
@@ -14,22 +7,28 @@ from src.model.camera import DefaultCamera
 from src.model.strategy.mavlink import MavlinkLandingStrategy
 from src.internal.exception import CameraError, MavlinkConnectionError
 from src.internal.logger.logger import setupLogger
+from src.internal.config.parser import FileConfigParserFactory
 
 if __name__ == "__main__":
     logger = setupLogger()
     logger.info("OpenPL Drone Landing Project Starting Up")
 
+    config_parser = FileConfigParserFactory.create("toml", logger)
+    config = config_parser.parse("src/cfg/config.toml")
+
     try:
         cameraMatrix: np.ndarray = np.array(
             [
-                [CAMERA_MATRIX["fx"], 0, CAMERA_MATRIX["cx"]],
-                [0, CAMERA_MATRIX["fy"], CAMERA_MATRIX["cy"]],
+                [config["camera_matrix"]["fx"], 0, config["camera_matrix"]["cx"]],
+                [0, config["camera_matrix"]["fy"], config["camera_matrix"]["cy"]],
                 [0, 0, 1],
             ]
         )
 
-        mavlinkClient = MavlinkClient(CONNECTION_STRING, logger)
-        platform = AprilTagPlatform(TARGET_TAG_ID, TAG_SIZE_METERS, logger)
+        mavlinkClient = MavlinkClient(config["connection"]["string"], logger)
+        platform = AprilTagPlatform(
+            config["apriltag"]["target_tag_id"], config["apriltag"]["tag_size"], logger
+        )
         landingStrategy = MavlinkLandingStrategy(logger)
 
         mavlinkClient.connect()
@@ -37,7 +36,9 @@ if __name__ == "__main__":
         while True:
             if mavlinkClient.isLanding:
 
-                with DefaultCamera(CAMERA_INDEX, cameraMatrix, logger) as defaultCamera:
+                with DefaultCamera(
+                    config["camera"]["index"], cameraMatrix, logger
+                ) as defaultCamera:
                     drone = Drone(
                         mavlinkClient=mavlinkClient,
                         camera=defaultCamera,

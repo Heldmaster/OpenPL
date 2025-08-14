@@ -23,13 +23,22 @@ class Drone(Vehicle):
         platform: "Platform",
         landingStrategy: "LandingStrategy",
         logger: logging.Logger,
+        config: dict,
     ) -> None:
         self.mavlinkClient = mavlinkClient
         self.camera = camera
         self.platform = platform
         self.landingStrategy = landingStrategy
         self.logger = logger
+        self.config = config
         self.logger.info("Drone object initialized.")
 
     def land(self) -> None:
-        self.landingStrategy.land(self, self.platform, self.mavlinkClient)
+        self.landingStrategy.land(
+            self,
+            self.platform,
+            self.mavlinkClient,
+            self.config["landing"]["refresh_rate"],
+            self.config["landing"]["height_threshold"],
+            self.config["debug"]["drawer_enabled"],
+        )
