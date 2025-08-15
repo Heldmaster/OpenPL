@@ -1,5 +1,6 @@
 import cv2
 import pupil_apriltags
+import threading
 import math
 import logging
 from abc import ABC, abstractmethod
@@ -36,43 +37,46 @@ class AprilTagPlatform(Platform):
         self.tagSize = tagSize
         self.logger = logger
 
+        self._lock = threading.Lock()
+
     def getInfo(self, cam: "Camera") -> Optional[Dict[str, float]]:
-        ok, frame = cam.getFrame()
-        if not ok:
-            self.logger.warning("Failed to get frame from camera.")
+        with self._lock:
+            ok, frame = cam.getFrame()
+            if not ok:
+                self.logger.warning("Failed to get frame from camera.")
+                return None
+
+            grayFrame: np.ndarray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            camMatrix: np.ndarray = cam.getCameraMatrix()
+            fx: float = camMatrix[0, 0]
+            fy: float = camMatrix[1, 1]
+            cx: float = camMatrix[0, 2]
+            cy: float = camMatrix[1, 2]
+
+            detections: list[pupil_apriltags.Detection] = self.detector.detect(
+                grayFrame,
+                estimate_tag_pose=True,
+                camera_params=(fx, fy, cx, cy),
+                tag_size=self.tagSize,
+            )
+
+            for detection in detections:
+                if detection.tag_id == self.tagId:
+                    translation: np.ndarray = detection.pose_t
+                    distance: float = np.linalg.norm(translation)
+
+                    centerX: float = detection.center[0]
+                    centerY: float = detection.center[1]
+                    angleX: float = math.atan((centerX - cx) / fx)
+                    angleY: float = math.atan((centerY - cy) / fy)
+                    corners: list[list[float]] = detection.corners.tolist()
+
+                    return {
+                        "tagId": detection.tag_id,
+                        "angleX": angleX,
+                        "angleY": angleY,
+                        "distance": distance,
+                        "corners": corners,
+                    }
+
             return None
-
-        grayFrame: np.ndarray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        camMatrix: np.ndarray = cam.getCameraMatrix()
-        fx: float = camMatrix[0, 0]
-        fy: float = camMatrix[1, 1]
-        cx: float = camMatrix[0, 2]
-        cy: float = camMatrix[1, 2]
-
-        detections: list[pupil_apriltags.Detection] = self.detector.detect(
-            grayFrame,
-            estimate_tag_pose=True,
-            camera_params=(fx, fy, cx, cy),
-            tag_size=self.tagSize,
-        )
-
-        for detection in detections:
-            if detection.tag_id == self.tagId:
-                translation: np.ndarray = detection.pose_t
-                distance: float = np.linalg.norm(translation)
-
-                centerX: float = detection.center[0]
-                centerY: float = detection.center[1]
-                angleX: float = math.atan((centerX - cx) / fx)
-                angleY: float = math.atan((centerY - cy) / fy)
-                corners: list[list[float]] = detection.corners.tolist()
-
-                return {
-                    "tagId": detection.tag_id,
-                    "angleX": angleX,
-                    "angleY": angleY,
-                    "distance": distance,
-                    "corners": corners,
-                }
-
-        return None

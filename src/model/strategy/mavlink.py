@@ -29,12 +29,10 @@ class MavlinkLandingStrategy(LandingStrategy):
 
         while mavlinkClient.isLanding:
 
-
             tagInfo: dict[str, float] | None = platform.getInfo(drone.camera)
 
             if tagInfo:
                 self.logger.info(f"AprilTag with ID {tagInfo['tagId']} detected.")
-
 
                 timeUs: int = int(time.time() * 1e6)
                 mavlinkClient.updateLandingTarget(
@@ -52,4 +50,3 @@ class MavlinkLandingStrategy(LandingStrategy):
                 self.logger.info("No AprilTag detected.")
 
             time.sleep(refresh_rate)
-

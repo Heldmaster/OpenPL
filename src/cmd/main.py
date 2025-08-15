@@ -51,7 +51,9 @@ if __name__ == "__main__":
                         config=config,
                     )
 
-                    videostreamer = VideoStreamerFactory.create(config["camera"]["streamer_type"], cam, platform)
+                    videostreamer = VideoStreamerFactory.create(
+                        config["camera"]["streamer_type"], cam, platform
+                    )
                     videostreamer.start()
                     drone.land()
                     videostreamer.stop()

@@ -2,7 +2,7 @@
 string = "udp:127.0.0.1:14550"
 
 [camera]
-type = "default"
+type = "imagezmq"
 streamer_type = "imagezmq"
 index = 0
 imagezmq_listen_uri = "tcp://127.0.0.1:5555"
@@ -13,12 +13,12 @@ fx = 800.0
 fy = 800.0
 
 # Optical center
-cx = 320.0
-cy = 240.0
+cx = 500.0
+cy = 500.0
 
 [apriltag]
-target_tag_id = 1
-tag_size = 0.16
+target_tag_id = 0
+tag_size = 1
 
 [landing]
 refresh_rate_seconds = 0.1

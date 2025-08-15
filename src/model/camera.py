@@ -83,7 +83,7 @@ class ImageZMQCamera(Camera):
         self._del()
 
     def getFrame(self) -> Tuple[bool, np.ndarray]:
-        with self._lock():
+        with self._lock:
             ret: bool
             frame: np.ndarray
             _, frame = self.image_hub.recv_image()
