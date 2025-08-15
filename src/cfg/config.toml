@@ -17,7 +17,7 @@ cx = 500.0
 cy = 500.0
 
 [apriltag]
-target_tag_id = 0
+target_tag_id = 1
 tag_size = 1
 
 [landing]
