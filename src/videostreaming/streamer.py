@@ -65,7 +65,7 @@ class ImageZMQStreamer(VideoStreamer):
         super().start()
 
     def stop(self):
-        self.sender.stop()
+        self.sender.close()
         super().stop()
 
     def _worker(self):
