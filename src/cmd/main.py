@@ -32,30 +32,37 @@ if __name__ == "__main__":
         )
         landingStrategy = MavlinkLandingStrategy(logger)
 
+        camera = StreamCameraFactory.create(
+            config["camera"]["type"], logger, cameraMatrix, config
+        )
+
+        videostreamer = VideoStreamerFactory.create(
+            config["videostreaming"]["streamer_type"], camera, platform
+        )
+
+        if config["videostreaming"]["continuous"]:
+            videostreamer.start()
+
         mavlinkClient.connect()
 
         while True:
             if mavlinkClient.isLanding:
 
-                camera = StreamCameraFactory.create(
-                    config["camera"]["type"], logger, cameraMatrix, config
+                drone = Drone(
+                    mavlinkClient=mavlinkClient,
+                    camera=camera,
+                    platform=platform,
+                    landingStrategy=landingStrategy,
+                    logger=logger,
+                    config=config,
                 )
 
-                with camera as cam:
-                    drone = Drone(
-                        mavlinkClient=mavlinkClient,
-                        camera=cam,
-                        platform=platform,
-                        landingStrategy=landingStrategy,
-                        logger=logger,
-                        config=config,
-                    )
-
-                    videostreamer = VideoStreamerFactory.create(
-                        config["camera"]["streamer_type"], cam, platform
-                    )
+                if not config["videostreaming"]["continuous"]:
                     videostreamer.start()
-                    drone.land()
+
+                drone.land()
+
+                if not config["videostreaming"]["continuous"]:
                     videostreamer.stop()
 
     except CameraError as e:

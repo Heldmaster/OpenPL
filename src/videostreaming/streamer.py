@@ -25,7 +25,10 @@ class VideoStreamer(ABC):
         Gets frame from camera and landing platform info (ID, corners, etc)
         """
         _, frame = self.camera.getFrame()
-        info = self.platform.getInfo(self.camera)
+        if not self.platform is None:
+            info = self.platform.getInfo(self.camera)
+        else:
+            info = None
 
         return frame, info
 
