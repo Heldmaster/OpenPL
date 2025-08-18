@@ -4,3 +4,4 @@ pupil-apriltags
 black
 toml
 imagezmq
+numpy

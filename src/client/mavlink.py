@@ -68,16 +68,20 @@ class MavlinkClient:
     ) -> None:
         if self.master is not None:
             self.master.mav.landing_target_send(
-                timeUs,
-                targetNum,
-                mavutil.mavlink.MAV_FRAME_BODY_FRD,
-                -1*angleX,
-                -1*angleY,
-                distance,
-                0,
-                0,
-                0,
-                0,
+                timeUs,                             #time_usec
+                targetNum,                          #target_num
+                mavutil.mavlink.MAV_FRAME_BODY_FRD, #frame
+                -1*angleX,                          #angle_x
+                -1*angleY,                          #angle_y
+                distance,                           #distance
+                0,                                  #size_x
+                0,                                  #size_y
+                0,                                  #x
+                0,                                  #y
+                0,                                  #z
+                [1.0, 0.0, 0.0, 0.0],               #q
+                2,                                  #type
+                0,                                  #position_valid
             )
             self.logger.info(
                 f"Sent LANDING_TARGET message for tag ID {targetNum} at {distance}."
