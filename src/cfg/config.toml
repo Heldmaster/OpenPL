@@ -2,7 +2,7 @@
 string = "udp:127.0.0.1:14550"
 
 [camera]
-type = "imagezmq"
+type = "default"
 index = 0
 imagezmq_listen_uri = "tcp://127.0.0.1:5555"
 
@@ -12,8 +12,8 @@ fx = 800.0
 fy = 800.0
 
 # Optical center
-cx = 500.0
-cy = 500.0
+cx = 320.0
+cy = 240.0
 
 [videostreaming]
 streamer_type = "imagezmq"
