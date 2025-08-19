@@ -21,12 +21,16 @@ continuous = true
 
 [apriltag]
 target_tag_id = 1
-tag_size = 1
+tag_size = 0.16
 
 [landing]
 refresh_rate_seconds = 0.1
 max_landing_time_seconds = 60.0
 height_threshold = 0.1
+
+[yaw_correction]
+enabled = true
+speed = 50
 
 [debug]
 drawer_enabled = false

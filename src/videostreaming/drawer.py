@@ -34,10 +34,10 @@ class DebugDrawer:
                 cv2.drawFrameAxes(
                     debug_frame,
                     cameraMatrix,
-                    np.zeros((4, 1), dtype=np.float32),
+                    np.zeros((4, 1), dtype=np.float32), #TODO Add distortion coefficients
                     R,
                     t,
-                    0.4,
+                    0.1,
                     thickness=2,
                 )
 
