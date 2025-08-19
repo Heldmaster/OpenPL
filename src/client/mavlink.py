@@ -50,7 +50,7 @@ class MavlinkClient:
             )
 
             item_msg = self.master.recv_match(
-                type="MISSION_ITEM_INT", blocking=True, timeout=0.01
+                type="MISSION_ITEM_INT", blocking=True, timeout=0.05
             )  # blocking because otherwise we'll miss requested message
             if item_msg:
                 self._last_mission_command = item_msg.command
@@ -93,7 +93,6 @@ class MavlinkClient:
     def correctYaw(self, deg: float, speed: float) -> None:
         if self.master is not None:
             dir = -1 if deg < 0 else 1
-            print(f"deg={deg}, dir={dir}")
             self.master.mav.command_long_send(
                 self.master.target_system,
                 self.master.target_component,
