@@ -19,9 +19,18 @@ cy = 500.0
 streamer_type = "imagezmq"
 continuous = true
 
-[apriltag]
-target_tag_id = 1
-tag_size = 1
+[platform]
+type = "vision_fiducial"
+
+# Visual fiducial platforms array
+[vision_fiducial]
+[[vision_fiducial.tags]]
+id = 1
+size = 1.0
+
+[[vision_fiducial.tags]]
+id = 2
+size = 0.15
 
 [landing]
 refresh_rate_seconds = 0.1

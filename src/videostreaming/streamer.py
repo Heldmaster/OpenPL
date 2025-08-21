@@ -4,6 +4,7 @@ import imagezmq
 import threading
 from abc import ABC, abstractmethod
 from typing import Optional, Dict
+import time
 
 from src.videostreaming.drawer import DebugDrawer
 from src.internal.exception import ApplicationError
@@ -76,6 +77,7 @@ class ImageZMQStreamer(VideoStreamer):
             frame, info = self.get_frame()
             processed_frame = self._debug_drawer.process_frame(frame, info)
             self.sender.send_image("DebugVideo", processed_frame)
+            time.sleep(0.05)
 
 
 class VideoStreamerFactory:

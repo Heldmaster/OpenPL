@@ -20,8 +20,7 @@ class Platform(ABC):
 class AprilTagPlatform(Platform):
     def __init__(
         self,
-        tagId: int,
-        tagSize: float,
+        tags: dict,
         logger: logging.Logger,
     ) -> None:
         self.detector: pupil_apriltags.Detector = pupil_apriltags.Detector(
@@ -33,11 +32,24 @@ class AprilTagPlatform(Platform):
             decode_sharpening=0.25,
             debug=0,
         )
-        self.tagId = tagId
-        self.tagSize = tagSize
+        self.tags = tags
         self.logger = logger
 
+        # Assuming that the tag with the first id from dict is the biggest and it is guaranteed that detector will be able to detect it
+        self.targetId = next(iter(self.tags))
+        print(f"Trget id = {self.targetId}, size={self.tags[self.targetId]}")
+
         self._lock = threading.Lock()
+
+    def getBestId(self, ids: list) -> int:
+        visibleIds: list = [tag_id for tag_id in ids if tag_id in self.tags]
+
+        if not visibleIds:
+            return None
+
+        bestId = min(visibleIds, key=lambda tagId: self.tags[tagId])
+
+        return bestId
 
     def getInfo(self, cam: "Camera") -> Optional[Dict[str, float]]:
         with self._lock:
@@ -57,11 +69,17 @@ class AprilTagPlatform(Platform):
                 grayFrame,
                 estimate_tag_pose=True,
                 camera_params=(fx, fy, cx, cy),
-                tag_size=self.tagSize,
+                tag_size=self.tags[self.targetId],
             )
 
+            tagsIds = []
+            info: dict = None
+
             for detection in detections:
-                if detection.tag_id == self.tagId:
+
+                tagsIds.append(detection.tag_id)
+
+                if detection.tag_id == self.targetId:
                     translation: np.ndarray = detection.pose_t
                     distance: float = np.linalg.norm(translation)
 
@@ -71,7 +89,7 @@ class AprilTagPlatform(Platform):
                     angleY: float = math.atan((centerY - cy) / fy)
                     corners: list[list[float]] = detection.corners.tolist()
 
-                    return {
+                    info = {
                         "tagId": detection.tag_id,
                         "angleX": angleX,
                         "angleY": angleY,
@@ -79,4 +97,8 @@ class AprilTagPlatform(Platform):
                         "corners": corners,
                     }
 
-            return None
+            bestId = self.getBestId(tagsIds)
+            if bestId is not None:
+                self.targetId = bestId
+
+            return info
