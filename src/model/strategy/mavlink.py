@@ -13,8 +13,8 @@ from src.internal.debug.drawer import DebugDrawer
 
 
 class MavlinkLandingStrategy(LandingStrategy):
-    def __init__(self, logger: logging.Logger) -> None:
-        super().__init__(logger)
+    def __init__(self, logger: logging.Logger, config: dict) -> None:
+        super().__init__(logger, config)
         self.logger.info("Precision Landing Strategy initialized.")
 
     def land(
@@ -42,6 +42,12 @@ class MavlinkLandingStrategy(LandingStrategy):
                     tagInfo["angleY"],
                     tagInfo["distance"],
                 )
+
+                if self.config["yaw_correction"]["enabled"]:
+                    mavlinkClient.correctYaw(
+                        tagInfo["yawError"],
+                        self.config["yaw_correction"]["speed"],
+                    )
 
                 if tagInfo["distance"] < height_threshold:
                     self.logger.info("Drone is close enough to land.")

@@ -30,7 +30,7 @@ if __name__ == "__main__":
         platform = AprilTagPlatform(
             config["apriltag"]["target_tag_id"], config["apriltag"]["tag_size"], logger
         )
-        landingStrategy = MavlinkLandingStrategy(logger)
+        landingStrategy = MavlinkLandingStrategy(logger, config)
 
         camera = StreamCameraFactory.create(
             config["camera"]["type"], logger, cameraMatrix, config

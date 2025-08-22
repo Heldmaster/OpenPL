@@ -62,14 +62,16 @@ class AprilTagPlatform(Platform):
 
             for detection in detections:
                 if detection.tag_id == self.tagId:
-                    translation: np.ndarray = detection.pose_t
-                    distance: float = np.linalg.norm(translation)
+                    pose_t: np.ndarray = detection.pose_t
+                    pose_R: np.ndarray = detection.pose_R
+                    distance: float = np.linalg.norm(pose_t)
 
                     centerX: float = detection.center[0]
                     centerY: float = detection.center[1]
                     angleX: float = math.atan((centerX - cx) / fx)
                     angleY: float = math.atan((centerY - cy) / fy)
                     corners: list[list[float]] = detection.corners.tolist()
+                    yawError: float = np.degrees(math.atan2(pose_R[1, 0], pose_R[0, 0]))
 
                     return {
                         "tagId": detection.tag_id,
@@ -77,6 +79,9 @@ class AprilTagPlatform(Platform):
                         "angleY": angleY,
                         "distance": distance,
                         "corners": corners,
+                        "pose_t": pose_t,
+                        "pose_R": pose_R,
+                        "yawError": yawError,
                     }
 
             return None
