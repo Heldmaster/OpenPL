@@ -15,7 +15,7 @@ if __name__ == "__main__":
     logger.info("OpenPL Drone Landing Project Starting Up")
 
     config_parser = FileConfigParserFactory.create("toml", logger)
-    config = config_parser.parse("src/cfg/config.toml")
+    config, tags = config_parser.parse("src/cfg/config.toml")
 
     try:
         cameraMatrix: np.ndarray = np.array(
@@ -28,7 +28,8 @@ if __name__ == "__main__":
 
         mavlinkClient = MavlinkClient(config["connection"]["string"], logger)
         platform = AprilTagPlatform(
-            config["apriltag"]["target_tag_id"], config["apriltag"]["tag_size"], logger
+            tags,
+            logger,
         )
         landingStrategy = MavlinkLandingStrategy(logger, config)
 

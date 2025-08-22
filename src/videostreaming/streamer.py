@@ -4,6 +4,7 @@ import imagezmq
 import threading
 from abc import ABC, abstractmethod
 from typing import Optional, Dict
+import time
 
 from src.videostreaming.drawer import DebugDrawer
 from src.internal.exception import ApplicationError
@@ -25,12 +26,13 @@ class VideoStreamer(ABC):
         Gets frame from camera and landing platform info (ID, corners, etc)
         """
         _, frame = self.camera.getFrame()
-        if not self.platform is None:
-            info = self.platform.getInfo(self.camera)
+        if self.platform is not None:
+            activeInfo, cornersAll = self.platform.getInfo(self.camera)
         else:
-            info = None
+            activeInfo = None
+            cornersAll = None
 
-        return frame, info
+        return frame, activeInfo, cornersAll
 
     def start(self):
         if self._running:
@@ -73,10 +75,13 @@ class ImageZMQStreamer(VideoStreamer):
 
     def _worker(self):
         while self._running:
-            frame, info = self.get_frame()
-            camera_matrix = self.camera.getCameraMatrix()
-            processed_frame = self._debug_drawer.process_frame(frame, camera_matrix, info)
+            frame, activeInfo, cornersAll = self.get_frame()
+            cameraMatrix = self.camera.getCameraMatrix()
+            processed_frame = self._debug_drawer.process_frame(
+                frame, cameraMatrix, activeInfo, cornersAll
+            )
             self.sender.send_image("DebugVideo", processed_frame)
+            time.sleep(0.05)
 
 
 class VideoStreamerFactory:
