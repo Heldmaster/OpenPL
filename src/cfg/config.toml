@@ -30,6 +30,10 @@ size = 1.0
 
 [[vision_fiducial.tags]]
 id = 2
+size = 0.35
+
+[[vision_fiducial.tags]]
+id = 3
 size = 0.15
 
 [landing]

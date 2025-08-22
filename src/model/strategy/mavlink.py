@@ -29,7 +29,11 @@ class MavlinkLandingStrategy(LandingStrategy):
 
         while mavlinkClient.isLanding:
 
-            tagInfo: dict[str, float] | None = platform.getInfo(drone.camera)
+            # tagInfo: dict[str, float] | None = platform.getInfo(drone.camera)
+            result: tuple[Optional[dict[str, float]], list[tuple[int, list]]] | None = (
+                platform.getInfo(drone.camera)
+            )
+            tagInfo, _ = result
 
             if tagInfo:
                 self.logger.info(f"AprilTag with ID {tagInfo['tagId']} detected.")

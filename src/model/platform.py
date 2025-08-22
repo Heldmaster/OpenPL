@@ -36,8 +36,7 @@ class AprilTagPlatform(Platform):
         self.logger = logger
 
         # Assuming that the tag with the first id from dict is the biggest and it is guaranteed that detector will be able to detect it
-        self.targetId = next(iter(self.tags))
-        print(f"Trget id = {self.targetId}, size={self.tags[self.targetId]}")
+        self.targetId: int = next(iter(self.tags))
 
         self._lock = threading.Lock()
 
@@ -51,7 +50,9 @@ class AprilTagPlatform(Platform):
 
         return bestId
 
-    def getInfo(self, cam: "Camera") -> Optional[Dict[str, float]]:
+    def getInfo(
+        self, cam: "Camera"
+    ) -> tuple[Optional[dict[str, float]], list[tuple[int, list]]]:
         with self._lock:
             ok, frame = cam.getFrame()
             if not ok:
@@ -74,10 +75,12 @@ class AprilTagPlatform(Platform):
 
             tagsIds = []
             info: dict = None
+            cornersAll: list[tuple[int, list]] = []
 
             for detection in detections:
 
                 tagsIds.append(detection.tag_id)
+                cornersAll.append((detection.tag_id, detection.corners.tolist()))
 
                 if detection.tag_id == self.targetId:
                     translation: np.ndarray = detection.pose_t
@@ -101,4 +104,4 @@ class AprilTagPlatform(Platform):
             if bestId is not None:
                 self.targetId = bestId
 
-            return info
+            return info, cornersAll
