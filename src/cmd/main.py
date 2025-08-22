@@ -8,7 +8,7 @@ from src.internal.exception import CameraError, MavlinkConnectionError
 from src.internal.logger.logger import setupLogger
 from src.internal.config.parser import FileConfigParserFactory
 from src.model.factory.camera import StreamCameraFactory
-from src.videostreaming.streamer import VideoStreamerFactory
+from src.videostream.streamer import VideoStreamerFactory
 
 if __name__ == "__main__":
     logger = setupLogger()

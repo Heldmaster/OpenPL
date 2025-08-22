@@ -14,7 +14,7 @@ class DebugDrawer:
         tagInfo: Optional[Dict[str, float]] = None,
         cornersAll: Optional[list[tuple[int, list]]] = None,
     ) -> np.ndarray:
-        
+
         debug_frame = frame.copy()
 
         if cornersAll:
@@ -75,11 +75,13 @@ class DebugDrawer:
             if "pose_R" in tagInfo and "pose_t" in tagInfo:
                 R = tagInfo["pose_R"]
                 t = tagInfo["pose_t"]
-                
+
                 cv2.drawFrameAxes(
                     debug_frame,
                     cameraMatrix,
-                    np.zeros((4, 1), dtype=np.float32), #TODO Add distortion coefficients
+                    np.zeros(
+                        (4, 1), dtype=np.float32
+                    ),  # TODO Add distortion coefficients
                     R,
                     t,
                     0.1,

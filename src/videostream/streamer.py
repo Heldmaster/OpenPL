@@ -3,25 +3,50 @@ import numpy as np
 import imagezmq
 import threading
 from abc import ABC, abstractmethod
-from typing import Optional, Dict
+from typing import Optional, TypeAlias
 import time
 
-from src.videostreaming.drawer import DebugDrawer
+from src.videostream.drawer import DebugDrawer
 from src.internal.exception import ApplicationError
+
+frameType: TypeAlias = np.ndarray
+activeInfoType: TypeAlias = Optional[dict[str, float]]
+cornersAllType: TypeAlias = list[tuple[int, list]]
 
 
 class VideoStreamer(ABC):
-    def __init__(self, camera: "Camera", platform: "Platform"):
+    @abstractmethod
+    def get_frame(self) -> tuple[frameType, activeInfoType, cornersAllType]:
+        """
+        Gets frame from camera and landing platform info (ID, corners, etc)
+        """
+        pass
+
+    @abstractmethod
+    def start(self) -> None:
+        pass
+
+    @abstractmethod
+    def stop(self) -> None:
+        pass
+
+    @abstractmethod
+    def _worker(self) -> None:
+        pass
+
+
+class ImageZMQStreamer(VideoStreamer):
+    def __init__(self, camera: "Camera", platform: "Platform") -> None:
         self.camera = camera
         self.platform = platform
-
         self._debug_drawer = DebugDrawer()
 
         self._thread = None
-
         self._running = False
 
-    def get_frame(self):
+        self.sender = None
+
+    def get_frame(self) -> tuple[frameType, activeInfoType, cornersAllType]:
         """
         Gets frame from camera and landing platform info (ID, corners, etc)
         """
@@ -34,7 +59,11 @@ class VideoStreamer(ABC):
 
         return frame, activeInfo, cornersAll
 
-    def start(self):
+    def start(self) -> None:
+        self.sender = imagezmq.ImageSender(
+            connect_to="tcp://127.0.0.1:5551", REQ_REP=False
+        )  # This is for system internal use, so I've been lazy to add URI to the config
+
         if self._running:
             return
 
@@ -43,7 +72,8 @@ class VideoStreamer(ABC):
         self._thread = threading.Thread(target=self._worker, daemon=True)
         self._thread.start()
 
-    def stop(self):
+    def stop(self) -> None:
+        self.sender.close()
         if not self._running:
             return
 
@@ -52,28 +82,7 @@ class VideoStreamer(ABC):
         if self._thread and self._thread.is_alive():
             self._thread.join()
 
-    @abstractmethod
-    def _worker(self):
-        pass
-
-
-class ImageZMQStreamer(VideoStreamer):
-    def __init__(self, camera: "Camera", platform: "Platform"):
-        super().__init__(camera, platform)
-
-        self.sender = None
-
-    def start(self):
-        self.sender = imagezmq.ImageSender(
-            connect_to="tcp://127.0.0.1:5551", REQ_REP=False
-        )  # This is for system internal use, so I've been lazy to add URI to the config
-        super().start()
-
-    def stop(self):
-        self.sender.close()
-        super().stop()
-
-    def _worker(self):
+    def _worker(self) -> None:
         while self._running:
             frame, activeInfo, cornersAll = self.get_frame()
             cameraMatrix = self.camera.getCameraMatrix()
@@ -91,7 +100,7 @@ class VideoStreamerFactory:
         type: str,
         camera: "Camera",
         platfrom: "Platform",
-    ):
+    ) -> VideoStreamer:
         if type == "imagezmq":
             return ImageZMQStreamer(camera, platfrom)
         else:
