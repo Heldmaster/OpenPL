@@ -31,7 +31,7 @@ if __name__ == "__main__":
             tags,
             logger,
         )
-        landingStrategy = MavlinkLandingStrategy(logger)
+        landingStrategy = MavlinkLandingStrategy(logger, config)
 
         camera = StreamCameraFactory.create(
             config["camera"]["type"], logger, cameraMatrix, config

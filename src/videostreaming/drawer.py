@@ -10,9 +10,11 @@ class DebugDrawer:
     def process_frame(
         self,
         frame: np.ndarray,
+        cameraMatrix: np.ndarray,
         tagInfo: Optional[Dict[str, float]] = None,
         cornersAll: Optional[list[tuple[int, list]]] = None,
     ) -> np.ndarray:
+        
         debug_frame = frame.copy()
 
         if cornersAll:
@@ -67,6 +69,21 @@ class DebugDrawer:
                     (0, 255, 0),
                     1,
                     cv2.LINE_AA,
+                )
+
+            # Drawing axes on apriltag
+            if "pose_R" in tagInfo and "pose_t" in tagInfo:
+                R = tagInfo["pose_R"]
+                t = tagInfo["pose_t"]
+                
+                cv2.drawFrameAxes(
+                    debug_frame,
+                    cameraMatrix,
+                    np.zeros((4, 1), dtype=np.float32), #TODO Add distortion coefficients
+                    R,
+                    t,
+                    0.1,
+                    thickness=2,
                 )
 
         return debug_frame

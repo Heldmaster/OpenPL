@@ -76,8 +76,9 @@ class ImageZMQStreamer(VideoStreamer):
     def _worker(self):
         while self._running:
             frame, activeInfo, cornersAll = self.get_frame()
+            cameraMatrix = self.camera.getCameraMatrix()
             processed_frame = self._debug_drawer.process_frame(
-                frame, activeInfo, cornersAll
+                frame, cameraMatrix, activeInfo, cornersAll
             )
             self.sender.send_image("DebugVideo", processed_frame)
             time.sleep(0.05)

@@ -82,15 +82,17 @@ class AprilTagPlatform(Platform):
                 tagsIds.append(detection.tag_id)
                 cornersAll.append((detection.tag_id, detection.corners.tolist()))
 
-                if detection.tag_id == self.targetId:
-                    translation: np.ndarray = detection.pose_t
-                    distance: float = np.linalg.norm(translation)
+                if detection.tag_id == self.tagId:
+                    pose_t: np.ndarray = detection.pose_t
+                    pose_R: np.ndarray = detection.pose_R
+                    distance: float = np.linalg.norm(pose_t)
 
                     centerX: float = detection.center[0]
                     centerY: float = detection.center[1]
                     angleX: float = math.atan((centerX - cx) / fx)
                     angleY: float = math.atan((centerY - cy) / fy)
                     corners: list[list[float]] = detection.corners.tolist()
+                    yawError: float = np.degrees(math.atan2(pose_R[1, 0], pose_R[0, 0]))
 
                     info = {
                         "tagId": detection.tag_id,
@@ -98,6 +100,9 @@ class AprilTagPlatform(Platform):
                         "angleY": angleY,
                         "distance": distance,
                         "corners": corners,
+                        "pose_t": pose_t,
+                        "pose_R": pose_R,
+                        "yawError": yawError,
                     }
 
             bestId = self.getBestId(tagsIds)

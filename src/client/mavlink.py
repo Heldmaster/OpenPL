@@ -50,7 +50,7 @@ class MavlinkClient:
             )
 
             item_msg = self.master.recv_match(
-                type="MISSION_ITEM_INT", blocking=True, timeout=0.01
+                type="MISSION_ITEM_INT", blocking=True, timeout=0.05
             )  # blocking because otherwise we'll miss requested message
             if item_msg:
                 self._last_mission_command = item_msg.command
@@ -68,19 +68,43 @@ class MavlinkClient:
     ) -> None:
         if self.master is not None:
             self.master.mav.landing_target_send(
-                timeUs,
-                targetNum,
-                mavutil.mavlink.MAV_FRAME_BODY_FRD,
-                -1 * angleX,
-                -1 * angleY,
-                distance,
-                0,
-                0,
-                0,
-                0,
+                timeUs,                             # time_usec
+                targetNum,                          # target_num
+                mavutil.mavlink.MAV_FRAME_BODY_FRD, # frame
+                -1*angleX,                          # angle_x
+                -1*angleY,                          # angle_y
+                distance,                           # distance
+                0,                                  # size_x
+                0,                                  # size_y
+                0,                                  # x
+                0,                                  # y
+                0,                                  # z
+                [1.0, 0.0, 0.0, 0.0],               # q 
+                2,                                  # type
+                0,                                  # position_valid
             )
             self.logger.info(
                 f"Sent LANDING_TARGET message for tag ID {targetNum} at {distance}."
+            )
+        else:
+            self.logger.error("Error: Not connected to the drone.")
+            return
+
+    def correctYaw(self, deg: float, speed: float) -> None:
+        if self.master is not None:
+            dir = -1 if deg < 0 else 1
+            self.master.mav.command_long_send(
+                self.master.target_system,
+                self.master.target_component,
+                mavutil.mavlink.MAV_CMD_CONDITION_YAW,
+                0,                                     # confirmation
+                abs(deg),                              # deg
+                speed,                                 # speed
+                dir,                                   # dir
+                1,                                     # absolute (0) or relative (1)
+                0,                                     # not used
+                0,                                     # not used
+                0,                                     # not used
             )
         else:
             self.logger.error("Error: Not connected to the drone.")

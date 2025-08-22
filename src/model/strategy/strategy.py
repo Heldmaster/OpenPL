@@ -9,8 +9,9 @@ if TYPE_CHECKING:
 
 
 class LandingStrategy(ABC):
-    def __init__(self, logger: logging.Logger) -> None:
+    def __init__(self, logger: logging.Logger, config: dict) -> None:
         self.logger = logger
+        self.config = config
 
     @abstractmethod
     def land(

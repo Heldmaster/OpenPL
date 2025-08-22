@@ -41,5 +41,9 @@ refresh_rate_seconds = 0.1
 max_landing_time_seconds = 60.0
 height_threshold = 0.1
 
+[yaw_correction]
+enabled = true
+speed = 10
+
 [debug]
 drawer_enabled = false
