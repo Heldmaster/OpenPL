@@ -82,7 +82,7 @@ class AprilTagPlatform(Platform):
                 tagsIds.append(detection.tag_id)
                 cornersAll.append((detection.tag_id, detection.corners.tolist()))
 
-                if detection.tag_id == self.tagId:
+                if detection.tag_id == self.targetId:
                     pose_t: np.ndarray = detection.pose_t
                     pose_R: np.ndarray = detection.pose_R
                     distance: float = np.linalg.norm(pose_t)
