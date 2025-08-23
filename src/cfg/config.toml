@@ -16,7 +16,7 @@ cx = 500.0
 cy = 500.0
 
 [videostreaming]
-streamer_type = "imagezmq"
+streamer_type = "rtsp"
 continuous = true
 
 [platform]
