@@ -123,14 +123,11 @@ class RTSPStreamer(VideoStreamer):
             frame, cameraMatrix, activeInfo, cornersAll
         )
 
-        processed_frame = cv2.resize(processed_frame, (320, 180))
-        
-        processed_frame = cv2.convertScaleAbs(processed_frame, alpha=0.8, beta=0) 
 
         return processed_frame
     
     def start(self) -> None:
-        output = "rtsp://127.0.0.1:8554/mystream"
+        output = "rtsp://127.0.0.1:8554/openpl"
         output_params = {
             "-vcodec":"libx264",
             "-crf": 25,

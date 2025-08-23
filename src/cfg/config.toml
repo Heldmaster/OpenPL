@@ -2,7 +2,7 @@
 string = "udp:127.0.0.1:14550"
 
 [camera]
-type = "default"
+type = "imagezmq"
 index = 0
 imagezmq_listen_uri = "tcp://127.0.0.1:5555"
 
