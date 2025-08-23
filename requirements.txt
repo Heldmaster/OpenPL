@@ -5,3 +5,4 @@ black
 toml
 imagezmq
 numpy
+vidgear
