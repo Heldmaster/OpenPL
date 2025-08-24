@@ -1,7 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
-import toml
 
+import toml
 from src.internal.exception import ApplicationError
 
 
@@ -19,11 +19,11 @@ class TomlConfigParser(ConfigParser):
         try:
             with open(path, "r", encoding="utf-8") as f:
                 raw_parsed: dict = toml.load(f)
-                config = self._ParseConfig(raw_parsed)
+                config = self._parse_config(raw_parsed)
 
                 tags: dict = None
                 if raw_parsed["platform"]["type"] == "vision_fiducial":
-                    tags = self._ParseTagsSeq(raw_parsed)
+                    tags = self._parse_tags_seq(raw_parsed)
 
                 print(tags)
                 return config, tags
@@ -39,7 +39,7 @@ class TomlConfigParser(ConfigParser):
                 f"Got an unknown error while parsing TOML configuration file: {e}"
             )
 
-    def _ParseConfig(self, raw_parsed: dict) -> dict:
+    def _parse_config(self, raw_parsed: dict) -> dict:
         config_copy: dict = raw_parsed.copy()
 
         if "vision_fiducial" in config_copy:
@@ -47,7 +47,7 @@ class TomlConfigParser(ConfigParser):
 
         return config_copy
 
-    def _ParseTagsSeq(self, raw_parsed: dict) -> dict:
+    def _parse_tags_seq(self, raw_parsed: dict) -> dict:
         tags_dict: dict = {}
         vision_fiducial: dict = raw_parsed.get("vision_fiducial", {})
         tags_list: list = vision_fiducial.get("tags", [])
@@ -70,7 +70,7 @@ class AbstractConfigParserFactory(ABC):
 
 class FileConfigParserFactory(ABC):
     @classmethod
-    def create(self, type: str, logger: logging.Logger) -> ConfigParser:
+    def create(cls, type: str, logger: logging.Logger) -> ConfigParser:
         if type == "toml":
             return TomlConfigParser(logger)
         else:

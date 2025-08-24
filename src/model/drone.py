@@ -1,6 +1,6 @@
 import logging
-from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.client.mavlink import MavlinkClient
@@ -18,26 +18,26 @@ class Vehicle(ABC):
 class Drone(Vehicle):
     def __init__(
         self,
-        mavlinkClient: "MavlinkClient",
+        mavlink_client: "MavlinkClient",
         camera: "Camera",
         platform: "Platform",
-        landingStrategy: "LandingStrategy",
+        landing_strategy: "LandingStrategy",
         logger: logging.Logger,
         config: dict,
     ) -> None:
-        self.mavlinkClient = mavlinkClient
+        self.mavlink_client = mavlink_client
         self.camera = camera
         self.platform = platform
-        self.landingStrategy = landingStrategy
+        self.landing_strategy = landing_strategy
         self.logger = logger
         self.config = config
         self.logger.info("Drone object initialized.")
 
     def land(self) -> None:
-        self.landingStrategy.land(
+        self.landing_strategy.land(
             self,
             self.platform,
-            self.mavlinkClient,
+            self.mavlink_client,
             self.config["landing"]["refresh_rate_seconds"],
             self.config["landing"]["height_threshold"],
         )

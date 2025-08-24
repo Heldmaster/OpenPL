@@ -1,19 +1,18 @@
-import cv2
-import pupil_apriltags
-import threading
-import math
 import logging
+import math
+import threading
 from abc import ABC, abstractmethod
-
-import numpy as np
 from typing import Dict, Optional
 
+import cv2
+import numpy as np
+import pupil_apriltags
 from src.model.camera import Camera
 
 
 class Platform(ABC):
     @abstractmethod
-    def getInfo(self, cam: "Camera") -> Optional[Dict[str, float]]:
+    def get_info(self, cam: "Camera") -> Optional[Dict[str, float]]:
         pass
 
 
@@ -40,73 +39,75 @@ class AprilTagPlatform(Platform):
 
         self._lock = threading.Lock()
 
-    def getBestId(self, ids: list) -> int:
-        visibleIds: list = [tag_id for tag_id in ids if tag_id in self.tags]
+    def get_best_id(self, ids: list) -> int:
+        visible_ids: list = [tag_id for tag_id in ids if tag_id in self.tags]
 
-        if not visibleIds:
+        if not visible_ids:
             return None
 
-        bestId = min(visibleIds, key=lambda tagId: self.tags[tagId])
+        best_id = min(visible_ids, key=lambda tag_id: self.tags[tag_id])
 
-        return bestId
+        return best_id
 
-    def getInfo(
+    def get_info(
         self, cam: "Camera"
     ) -> tuple[Optional[dict[str, float]], list[tuple[int, list]]]:
         with self._lock:
-            ok, frame = cam.getFrame()
+            ok, frame = cam.get_frame()
             if not ok:
                 self.logger.warning("Failed to get frame from camera.")
                 return None
 
-            grayFrame: np.ndarray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            camMatrix: np.ndarray = cam.getCameraMatrix()
-            fx: float = camMatrix[0, 0]
-            fy: float = camMatrix[1, 1]
-            cx: float = camMatrix[0, 2]
-            cy: float = camMatrix[1, 2]
+            gray: np.ndarray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            cam_matrix: np.ndarray = cam.get_camera_matrix()
+            fx: float = cam_matrix[0, 0]
+            fy: float = cam_matrix[1, 1]
+            cx: float = cam_matrix[0, 2]
+            cy: float = cam_matrix[1, 2]
 
             detections: list[pupil_apriltags.Detection] = self.detector.detect(
-                grayFrame,
+                gray,
                 estimate_tag_pose=True,
                 camera_params=(fx, fy, cx, cy),
                 tag_size=self.tags[self.targetId],
             )
 
-            tagsIds = []
+            tags_ids = []
             info: dict = None
-            cornersAll: list[tuple[int, list]] = []
+            corners_all: list[tuple[int, list]] = []
 
             for detection in detections:
 
-                tagsIds.append(detection.tag_id)
-                cornersAll.append((detection.tag_id, detection.corners.tolist()))
+                tags_ids.append(detection.tag_id)
+                corners_all.append((detection.tag_id, detection.corners.tolist()))
 
                 if detection.tag_id == self.targetId:
                     pose_t: np.ndarray = detection.pose_t
                     pose_R: np.ndarray = detection.pose_R
                     distance: float = np.linalg.norm(pose_t)
 
-                    centerX: float = detection.center[0]
-                    centerY: float = detection.center[1]
-                    angleX: float = math.atan((centerX - cx) / fx)
-                    angleY: float = math.atan((centerY - cy) / fy)
+                    center_x: float = detection.center[0]
+                    center_y: float = detection.center[1]
+                    angle_x: float = math.atan((center_x - cx) / fx)
+                    angle_y: float = math.atan((center_y - cy) / fy)
                     corners: list[list[float]] = detection.corners.tolist()
-                    yawError: float = np.degrees(math.atan2(pose_R[1, 0], pose_R[0, 0]))
+                    yaw_error: float = np.degrees(
+                        math.atan2(pose_R[1, 0], pose_R[0, 0])
+                    )
 
                     info = {
-                        "tagId": detection.tag_id,
-                        "angleX": angleX,
-                        "angleY": angleY,
+                        "tag_id": detection.tag_id,
+                        "angle_x": angle_x,
+                        "angle_y": angle_y,
                         "distance": distance,
                         "corners": corners,
                         "pose_t": pose_t,
                         "pose_R": pose_R,
-                        "yawError": yawError,
+                        "yaw_error": yaw_error,
                     }
 
-            bestId = self.getBestId(tagsIds)
-            if bestId is not None:
-                self.targetId = bestId
+            best_id = self.get_best_id(tags_ids)
+            if best_id is not None:
+                self.targetId = best_id
 
-            return info, cornersAll
+            return info, corners_all

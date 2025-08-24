@@ -1,7 +1,7 @@
 import logging
 
 
-def setupLogger() -> logging.Logger:
+def setup_logger() -> logging.Logger:
     logger: logging.Logger = logging.getLogger("OpenDLLogger")
     logger.setLevel(logging.INFO)
     handler: logging.StreamHandler = logging.StreamHandler()

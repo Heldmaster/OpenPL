@@ -1,13 +1,13 @@
-from pymavlink import mavutil
 import logging
 from typing import Optional
 
+from pymavlink import mavutil
 from src.internal.exception.exception import MavlinkConnectionError
 
 
 class MavlinkClient:
-    def __init__(self, connStr: str, logger: logging.Logger) -> None:
-        self.connStr = connStr
+    def __init__(self, conn_str: str, logger: logging.Logger) -> None:
+        self.connStr = conn_str
         self.logger = logger
         self.master: Optional[mavutil.mavlink_connection] = None
 
@@ -28,7 +28,7 @@ class MavlinkClient:
             ) from e
 
     @property
-    def isLanding(self) -> bool:
+    def is_landing(self) -> bool:
         """
         Returns True if vehicle is landing somehow (in LAND mode or performing landing due to mission point) and armed
         """
@@ -63,16 +63,21 @@ class MavlinkClient:
         else:
             return False
 
-    def updateLandingTarget(
-        self, timeUs: int, targetNum: int, angleX: float, angleY: float, distance: float
+    def update_landing_target(
+        self,
+        time_us: int,
+        target_num: int,
+        angle_x: float,
+        angle_y: float,
+        distance: float,
     ) -> None:
         if self.master is not None:
             self.master.mav.landing_target_send(
-                timeUs,  # time_usec
-                targetNum,  # target_num
+                time_us,  # time_usec
+                target_num,  # target_num
                 mavutil.mavlink.MAV_FRAME_BODY_FRD,  # frame
-                -1 * angleX,  # angle_x
-                -1 * angleY,  # angle_y
+                -1 * angle_x,  # angle_x
+                -1 * angle_y,  # angle_y
                 distance,  # distance
                 0,  # size_x
                 0,  # size_y
@@ -84,13 +89,13 @@ class MavlinkClient:
                 0,  # position_valid
             )
             self.logger.info(
-                f"Sent LANDING_TARGET message for tag ID {targetNum} at {distance}."
+                f"Sent LANDING_TARGET message for tag ID {target_num} at {distance}."
             )
         else:
             self.logger.error("Error: Not connected to the drone.")
             return
 
-    def correctYaw(self, deg: float, speed: float) -> None:
+    def correct_yaw(self, deg: float, speed: float) -> None:
         if self.master is not None:
             dir = -1 if deg < 0 else 1
             self.master.mav.command_long_send(

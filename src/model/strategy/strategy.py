@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from src.client.mavlink import MavlinkClient
     from src.model.drone import Drone
     from src.model.platform import Platform
-    from src.client.mavlink import MavlinkClient
 
 
 class LandingStrategy(ABC):
@@ -18,7 +18,7 @@ class LandingStrategy(ABC):
         self,
         drone: "Drone",
         platform: "Platform",
-        mavlinkClient: "MavlinkClient",
+        mavlink_client: "MavlinkClient",
         refresh_rate: float,
         height_threshold: float,
     ) -> None:

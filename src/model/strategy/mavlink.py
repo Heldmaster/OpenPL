@@ -1,15 +1,16 @@
-import time
-import numpy as np
 import logging
+import time
 from typing import TYPE_CHECKING, Optional
+
+import numpy as np
 
 if TYPE_CHECKING:
     from src.model.drone import Drone
     from src.model.platform import Platform
     from src.client.mavlink import MavlinkClient
 
-from src.model.strategy.strategy import LandingStrategy
 from src.internal.debug.drawer import DebugDrawer
+from src.model.strategy.strategy import LandingStrategy
 
 
 class MavlinkLandingStrategy(LandingStrategy):
@@ -21,39 +22,39 @@ class MavlinkLandingStrategy(LandingStrategy):
         self,
         drone: "Drone",
         platform: "Platform",
-        mavlinkClient: "MavlinkClient",
+        mavlink_client: "MavlinkClient",
         refresh_rate: float,
         height_threshold: float,
     ) -> None:
         self.logger.info("Executing precision landing strategy...")
 
-        while mavlinkClient.isLanding:
+        while mavlink_client.is_landing:
 
-            # tagInfo: dict[str, float] | None = platform.getInfo(drone.camera)
+            # tag_info: dict[str, float] | None = platform.get_info(drone.camera)
             result: tuple[Optional[dict[str, float]], list[tuple[int, list]]] | None = (
-                platform.getInfo(drone.camera)
+                platform.get_info(drone.camera)
             )
-            tagInfo, _ = result
+            tag_info, _ = result
 
-            if tagInfo:
-                self.logger.info(f"AprilTag with ID {tagInfo['tagId']} detected.")
+            if tag_info:
+                self.logger.info(f"AprilTag with ID {tag_info['tag_id']} detected.")
 
-                timeUs: int = int(time.time() * 1e6)
-                mavlinkClient.updateLandingTarget(
-                    timeUs,
-                    int(tagInfo["tagId"]),
-                    tagInfo["angleX"],
-                    tagInfo["angleY"],
-                    tagInfo["distance"],
+                time_us: int = int(time.time() * 1e6)
+                mavlink_client.update_landing_target(
+                    time_us,
+                    int(tag_info["tag_id"]),
+                    tag_info["angle_x"],
+                    tag_info["angle_y"],
+                    tag_info["distance"],
                 )
 
                 if self.config["yaw_correction"]["enabled"]:
-                    mavlinkClient.correctYaw(
-                        tagInfo["yawError"],
+                    mavlink_client.correct_yaw(
+                        tag_info["yaw_error"],
                         self.config["yaw_correction"]["speed"],
                     )
 
-                if tagInfo["distance"] < height_threshold:
+                if tag_info["distance"] < height_threshold:
                     self.logger.info("Drone is close enough to land.")
                     break
             else:

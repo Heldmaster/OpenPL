@@ -1,6 +1,7 @@
+from typing import Dict, Optional
+
 import cv2
 import numpy as np
-from typing import Optional, Dict
 
 
 class DebugDrawer:
@@ -10,15 +11,15 @@ class DebugDrawer:
         cv2.resizeWindow(window_name, 800, 600)
 
     def draw(
-        self, frame: np.ndarray, tagInfo: Optional[Dict[str, float]] = None
+        self, frame: np.ndarray, tag_info: Optional[Dict[str, float]] = None
     ) -> np.ndarray:
         debug_frame = frame.copy()
 
-        if tagInfo:
+        if tag_info:
 
             # Drawing outline on apriltags in frame
-            if "corners" in tagInfo:
-                corners = tagInfo["corners"]
+            if "corners" in tag_info:
+                corners = tag_info["corners"]
                 int_corners = np.array(corners, dtype=np.int32)
                 cv2.polylines(
                     debug_frame,

@@ -1,24 +1,23 @@
 import numpy as np
-
 from src.client.mavlink import MavlinkClient
+from src.internal.config.parser import FileConfigParserFactory
+from src.internal.exception import CameraError, MavlinkConnectionError
+from src.internal.logger.logger import setup_logger
 from src.model.drone import Drone
+from src.model.factory.camera import StreamCameraFactory
 from src.model.platform import AprilTagPlatform
 from src.model.strategy.mavlink import MavlinkLandingStrategy
-from src.internal.exception import CameraError, MavlinkConnectionError
-from src.internal.logger.logger import setupLogger
-from src.internal.config.parser import FileConfigParserFactory
-from src.model.factory.camera import StreamCameraFactory
 from src.videostream.streamer import VideoStreamerFactory
 
 if __name__ == "__main__":
-    logger = setupLogger()
+    logger = setup_logger()
     logger.info("OpenPL Drone Landing Project Starting Up")
 
     config_parser = FileConfigParserFactory.create("toml", logger)
     config, tags = config_parser.parse("src/cfg/config.toml")
 
     try:
-        cameraMatrix: np.ndarray = np.array(
+        camera_matrix: np.ndarray = np.array(
             [
                 [config["camera_matrix"]["fx"], 0, config["camera_matrix"]["cx"]],
                 [0, config["camera_matrix"]["fy"], config["camera_matrix"]["cy"]],
@@ -26,15 +25,15 @@ if __name__ == "__main__":
             ]
         )
 
-        mavlinkClient = MavlinkClient(config["connection"]["string"], logger)
+        mavlink_client = MavlinkClient(config["connection"]["string"], logger)
         platform = AprilTagPlatform(
             tags,
             logger,
         )
-        landingStrategy = MavlinkLandingStrategy(logger, config)
+        landing_strategy = MavlinkLandingStrategy(logger, config)
 
         camera = StreamCameraFactory.create(
-            config["camera"]["type"], logger, cameraMatrix, config
+            config["camera"]["type"], logger, camera_matrix, config
         )
 
         videostreamer = VideoStreamerFactory.create(
@@ -44,16 +43,16 @@ if __name__ == "__main__":
         if config["videostreaming"]["continuous"]:
             videostreamer.start()
 
-        mavlinkClient.connect()
+        mavlink_client.connect()
 
         while True:
-            if mavlinkClient.isLanding:
+            if mavlink_client.is_landing:
 
                 drone = Drone(
-                    mavlinkClient=mavlinkClient,
+                    mavlink_client=mavlink_client,
                     camera=camera,
                     platform=platform,
-                    landingStrategy=landingStrategy,
+                    landing_strategy=landing_strategy,
                     logger=logger,
                     config=config,
                 )

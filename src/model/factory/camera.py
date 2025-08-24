@@ -1,9 +1,9 @@
 import logging
 from abc import ABC, abstractmethod
-import numpy as np
 
-from src.model.camera import Camera, DefaultCamera, ImageZMQCamera
+import numpy as np
 from src.internal.exception import CameraError
+from src.model.camera import Camera, DefaultCamera, ImageZMQCamera
 
 
 class AbstractCameraFactory(ABC):
@@ -15,7 +15,7 @@ class AbstractCameraFactory(ABC):
 class StreamCameraFactory(AbstractCameraFactory):
     @classmethod
     def create(
-        self, type: str, logger: logging.Logger, camera_matrix: np.ndarray, config: dict
+        cls, type: str, logger: logging.Logger, camera_matrix: np.ndarray, config: dict
     ) -> Camera:
         if type == "default":
             return DefaultCamera(config["camera"]["index"], camera_matrix, logger)

@@ -1,30 +1,30 @@
-import cv2
-import numpy as np
-import imagezmq
 import logging
 import threading
-from typing import Tuple
 from abc import ABC, abstractmethod
+from typing import Tuple
 
+import cv2
+import imagezmq
+import numpy as np
 from src.internal.exception import CameraError
 
 
 class Camera(ABC):
     @abstractmethod
-    def getFrame(self) -> Tuple[bool, np.ndarray]:
+    def get_frame(self) -> Tuple[bool, np.ndarray]:
         pass
 
     @abstractmethod
-    def getCameraMatrix(self) -> np.ndarray:
+    def get_camera_matrix(self) -> np.ndarray:
         pass
 
 
 class DefaultCamera(Camera):
     def __init__(
-        self, cameraIndex: int, cameraMatrix: np.ndarray, logger: logging.Logger
+        self, camera_index: int, camera_matrix: np.ndarray, logger: logging.Logger
     ) -> None:
-        self.cameraIndex = cameraIndex
-        self.cameraMatrix = cameraMatrix
+        self.cameraIndex = camera_index
+        self.camera_matrix = camera_matrix
         self.logger = logger
 
         self._lock = threading.Lock()
@@ -40,7 +40,7 @@ class DefaultCamera(Camera):
     def __exit__(self, exc_type, exc, exc_tb) -> None:
         self._del()
 
-    def getFrame(self) -> Tuple[bool, np.ndarray]:
+    def get_frame(self) -> Tuple[bool, np.ndarray]:
         with self._lock:
             ret: bool
             frame: np.ndarray
@@ -52,16 +52,16 @@ class DefaultCamera(Camera):
             self.cap.release()
         self.logger.info("Camera capture closed.")
 
-    def getCameraMatrix(self) -> np.ndarray:
-        return self.cameraMatrix
+    def get_camera_matrix(self) -> np.ndarray:
+        return self.camera_matrix
 
 
 class ImageZMQCamera(Camera):
     def __init__(
-        self, listen_uri: str, cameraMatrix: np.ndarray, logger: logging.Logger
+        self, listen_uri: str, camera_matrix: np.ndarray, logger: logging.Logger
     ) -> None:
         self.listen_uri = listen_uri
-        self.cameraMatrix = cameraMatrix
+        self.camera_matrix = camera_matrix
         self.logger = logger
 
         self._lock = threading.Lock()
@@ -82,7 +82,7 @@ class ImageZMQCamera(Camera):
     def __exit__(self, exc_type, exc, exc_tb) -> None:
         self._del()
 
-    def getFrame(self) -> Tuple[bool, np.ndarray]:
+    def get_frame(self) -> Tuple[bool, np.ndarray]:
         with self._lock:
             ret: bool
             frame: np.ndarray
@@ -99,5 +99,5 @@ class ImageZMQCamera(Camera):
     def _del(self) -> None:
         self.logger.info("Camera capture closed.")
 
-    def getCameraMatrix(self) -> np.ndarray:
-        return self.cameraMatrix
+    def get_camera_matrix(self) -> np.ndarray:
+        return self.camera_matrix

@@ -1,19 +1,13 @@
-import cv2
-import numpy as np
-import imagezmq
-from vidgear.gears import WriteGear
 import threading
-from abc import ABC, abstractmethod
-from typing import Optional, TypeAlias
 import time
-import subprocess
+from abc import ABC, abstractmethod
 
-from src.videostream.drawer import DebugDrawer
+import cv2
+import imagezmq
+import numpy as np
 from src.internal.exception import ApplicationError
-
-frameType: TypeAlias = np.ndarray
-activeInfoType: TypeAlias = Optional[dict[str, float]]
-cornersAllType: TypeAlias = list[tuple[int, list]]
+from src.videostream.drawer import DebugDrawer
+from vidgear.gears import WriteGear
 
 
 class VideoStreamer(ABC):
@@ -36,6 +30,7 @@ class VideoStreamer(ABC):
     def _worker(self) -> None:
         pass
 
+
 class NullStreamer(VideoStreamer):
     def get_frame(self):
         pass
@@ -48,6 +43,7 @@ class NullStreamer(VideoStreamer):
 
     def _worker(self):
         pass
+
 
 class ImageZMQStreamer(VideoStreamer):
     def __init__(self, camera: "Camera", platform: "Platform") -> None:
@@ -64,16 +60,16 @@ class ImageZMQStreamer(VideoStreamer):
         """
         Gets frame from camera and landing platform info (ID, corners, etc)
         """
-        _, frame = self.camera.getFrame()
+        _, frame = self.camera.get_frame()
         if self.platform is not None:
-            activeInfo, cornersAll = self.platform.getInfo(self.camera)
+            active_info, corners_all = self.platform.get_info(self.camera)
         else:
-            activeInfo = None
-            cornersAll = None
+            active_info = None
+            corners_all = None
 
-        cameraMatrix = self.camera.getCameraMatrix()
+        camera_matrix = self.camera.get_camera_matrix()
         processed_frame = self._debug_drawer.process_frame(
-            frame, cameraMatrix, activeInfo, cornersAll
+            frame, camera_matrix, active_info, corners_all
         )
 
         return processed_frame
@@ -123,29 +119,28 @@ class RTSPStreamer(VideoStreamer):
         """
         Gets frame from camera and landing platform info (ID, corners, etc)
         """
-        _, frame = self.camera.getFrame()
+        _, frame = self.camera.get_frame()
         if self.platform is not None:
-            activeInfo, cornersAll = self.platform.getInfo(self.camera)
+            active_info, corners_all = self.platform.get_info(self.camera)
         else:
-            activeInfo = None
-            cornersAll = None
+            active_info = None
+            corners_all = None
 
-        cameraMatrix = self.camera.getCameraMatrix()
+        camera_matrix = self.camera.get_camera_matrix()
         processed_frame = self._debug_drawer.process_frame(
-            frame, cameraMatrix, activeInfo, cornersAll
+            frame, camera_matrix, active_info, corners_all
         )
 
-
         return processed_frame
-    
+
     def start(self) -> None:
         output = "rtsp://127.0.0.1:8554/openpl"
         output_params = {
-            "-vcodec":"libx264",
+            "-vcodec": "libx264",
             "-crf": 25,
-            "-preset": "ultrafast", 
-            "-tune": "zerolatency", 
-            "-f": "rtsp", 
+            "-preset": "ultrafast",
+            "-tune": "zerolatency",
+            "-f": "rtsp",
             "-rtsp_transport": "udp",
         }
 
@@ -182,7 +177,7 @@ class RTSPStreamer(VideoStreamer):
 class VideoStreamerFactory:
     @classmethod
     def create(
-        self,
+        cls,
         type: str,
         camera: "Camera",
         platfrom: "Platform",
