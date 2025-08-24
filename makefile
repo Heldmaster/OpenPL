@@ -1,6 +1,8 @@
 .PHONY: format run run-web clean
 
 format:
+	@python -m pycln src;
+	@python -m isort src;
 	@python -m black src;
 
 run:
