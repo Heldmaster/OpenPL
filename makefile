@@ -5,8 +5,10 @@ format:
 
 run:
 	@python -m src.cmd.main;
+	cd ./web && pnpm install && pnpm run dev
 
 clean:
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
 	find . -type d -name ".pytest_cache" -delete
+	cd ./web && rm -rf ./node_modules
