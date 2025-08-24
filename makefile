@@ -1,10 +1,12 @@
-.PHONY: format run clean
+.PHONY: format run run-web clean
 
 format:
 	@python -m black src;
 
 run:
 	@python -m src.cmd.main;
+
+run-web:
 	cd ./web && pnpm install && pnpm run dev
 
 clean:
