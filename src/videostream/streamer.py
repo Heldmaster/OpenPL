@@ -36,6 +36,18 @@ class VideoStreamer(ABC):
     def _worker(self) -> None:
         pass
 
+class NullStreamer(VideoStreamer):
+    def get_frame(self):
+        pass
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
+
+    def _worker(self):
+        pass
 
 class ImageZMQStreamer(VideoStreamer):
     def __init__(self, camera: "Camera", platform: "Platform") -> None:
@@ -175,7 +187,9 @@ class VideoStreamerFactory:
         camera: "Camera",
         platfrom: "Platform",
     ) -> VideoStreamer:
-        if type == "imagezmq":
+        if type == "null":
+            return NullStreamer()
+        elif type == "imagezmq":
             return ImageZMQStreamer(camera, platfrom)
         elif type == "rtsp":
             return RTSPStreamer(camera, platfrom)

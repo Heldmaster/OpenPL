@@ -16,7 +16,7 @@ cx = 500.0
 cy = 500.0
 
 [videostreaming]
-streamer_type = "rtsp"
+streamer_type = "null"
 continuous = true
 
 [platform]
@@ -44,6 +44,3 @@ height_threshold = 0.1
 [yaw_correction]
 enabled = true
 speed = 10
-
-[debug]
-drawer_enabled = false
