@@ -23,7 +23,7 @@ clean:
 
 help:
 	@echo "Использование:"
-	@echo "  make run-web HOST=0.0.0.0 PORT=3000"
+	@echo "  make run-web"
 	@echo "  make run-web-host host=0.0.0.0 port=3000"
 	@echo ""
 	@echo "Значения по умолчанию: HOST=localhost PORT=5173"
