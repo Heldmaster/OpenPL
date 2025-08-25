@@ -10,10 +10,10 @@ run:
 	@python -m src.cmd.main;
 
 run-web:
-	cd ./web && pnpm install && pnpm run dev -- --host $(HOST) --port $(PORT)
+	cd ./web && pnpm install && pnpm run dev --host $(HOST) --port $(PORT)
 
 run-web-host:
-	cd ./web && pnpm install && pnpm run dev -- --host $(host) --port $(port)
+	cd ./web && pnpm install && pnpm run dev --host $(host) --port $(port)
 
 clean:
 	find . -type f -name "*.pyc" -delete
