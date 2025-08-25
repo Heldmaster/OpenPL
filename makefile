@@ -1,4 +1,4 @@
- .PHONY: format run run-web clean
+.PHONY: format run run-web clean
 
 HOST ?= localhost
 PORT ?= 5173
