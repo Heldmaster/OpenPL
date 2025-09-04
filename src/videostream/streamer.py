@@ -18,6 +18,11 @@ cornersAllType: TypeAlias = list[tuple[int, list]]
 
 class VideoStreamer(ABC):
     @abstractmethod
+    def __init__(self, camera: "Camera", platform: "Platform") -> None:
+        self.camera = camera
+        self.platform = platform
+
+    @abstractmethod
     def get_frame(self) -> np.ndarray:
         """
         Gets frame from camera and landing platform info (ID, corners, etc)
@@ -37,6 +42,9 @@ class VideoStreamer(ABC):
         pass
 
 class NullStreamer(VideoStreamer):
+    def __init__(self):
+        pass
+
     def get_frame(self):
         pass
 

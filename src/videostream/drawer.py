@@ -17,6 +17,10 @@ class DebugDrawer:
 
         debug_frame = frame.copy()
 
+        height, width = frame.shape[:2]
+        info_text = f"Resolution: {width}x{height}"
+        cv2.putText(debug_frame, info_text, (10, 30), cv2.FONT_HERSHEY_DUPLEX, 0.7, (255, 255, 255), 1)
+
         if cornersAll:
             for tag in cornersAll:
                 currentCorners = tag[1]

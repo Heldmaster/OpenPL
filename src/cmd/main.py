@@ -37,9 +37,14 @@ if __name__ == "__main__":
             config["camera"]["type"], logger, cameraMatrix, config
         )
 
-        videostreamer = VideoStreamerFactory.create(
-            config["videostreaming"]["streamer_type"], camera, platform
-        )
+        if config["videostreaming"]["always_detect"]:
+            videostreamer = VideoStreamerFactory.create(
+                config["videostreaming"]["streamer_type"], camera, platform
+            )
+        else:
+            videostreamer = VideoStreamerFactory.create(
+                config["videostreaming"]["streamer_type"], camera, None
+            )
 
         if config["videostreaming"]["continuous"]:
             videostreamer.start()
@@ -59,12 +64,14 @@ if __name__ == "__main__":
                 )
 
                 if not config["videostreaming"]["continuous"]:
+                    videostreamer.platform = platform
                     videostreamer.start()
 
                 drone.land()
 
                 if not config["videostreaming"]["continuous"]:
                     videostreamer.stop()
+                    videostreamer.platform = None
 
     except CameraError as e:
         logger.critical(f"A camera-related error occurred: {e}")
