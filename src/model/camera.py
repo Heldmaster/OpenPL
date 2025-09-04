@@ -101,3 +101,39 @@ class ImageZMQCamera(Camera):
 
     def getCameraMatrix(self) -> np.ndarray:
         return self.cameraMatrix
+
+class RTSPCamera(Camera):
+    def __init__(
+        self, rtsp_url: str, cameraMatrix: np.ndarray, logger: logging.Logger
+    ) -> None:
+        self.rtsp_url = rtsp_url
+        self.cameraMatrix = cameraMatrix
+        self.logger = logger
+
+        self._lock = threading.Lock()
+
+        self.cap: cv2.VideoCapture = cv2.VideoCapture(self.rtsp_url)
+        if not self.cap.isOpened():
+            self.logger.error("Cannot open camera.")
+            raise CameraError(f"Cannot open RTSP stream at {self.rtsp_url}.")
+
+    def __enter__(self) -> "Camera":
+        return self
+
+    def __exit__(self, exc_type, exc, exc_tb) -> None:
+        self._del()
+
+    def getFrame(self) -> Tuple[bool, np.ndarray]:
+        with self._lock:
+            ret: bool
+            frame: np.ndarray
+            ret, frame = self.cap.read()
+            return ret, frame
+
+    def _del(self) -> None:
+        if self.cap.isOpened():
+            self.cap.release()
+        self.logger.info("Camera capture closed.")
+
+    def getCameraMatrix(self) -> np.ndarray:
+        return self.cameraMatrix
