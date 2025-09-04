@@ -18,7 +18,7 @@ cy = 500.0
 [videostreaming]
 streamer_type = "imagezmq"
 continuous = true
-always_detect = true
+always_detect = false
 
 [platform]
 type = "vision_fiducial"
