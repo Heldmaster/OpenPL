@@ -15,7 +15,7 @@ if __name__ == "__main__":
     logger.info("OpenPL Drone Landing Project Starting Up")
 
     config_parser = FileConfigParserFactory.create("toml", logger)
-    config, tags = config_parser.parse("src/cfg/config.toml")
+    config, tags = config_parser.parse("config.toml")
 
     try:
         cameraMatrix: np.ndarray = np.array(

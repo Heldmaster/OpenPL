@@ -3,3 +3,5 @@
 *.code-workspace
 __pycache__
 venv
+dist
+build
