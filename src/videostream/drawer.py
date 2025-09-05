@@ -66,7 +66,7 @@ class DebugDrawer:
 
                 cv2.putText(
                     debug_frame,
-                    f"{tagInfo["tagId"]}",
+                    f"{tagInfo['tagId']}",
                     (centerX, centerY),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
