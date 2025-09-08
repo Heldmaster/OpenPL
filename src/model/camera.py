@@ -86,7 +86,13 @@ class ImageZMQCamera(Camera):
         with self._lock:
             ret: bool
             frame: np.ndarray
-            _, frame = self.image_hub.recv_image()
+            _, jpg_buffer = self.image_hub.recv_jpg()
+            nparr = np.frombuffer(jpg_buffer, np.uint8)
+            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+            if frame.dtype != np.uint8:
+                self.logger.warning("Casting frame to uint8... ensure that imagezmq hub gets uint8 decoded jpeg frames!")
+                frame = frame.astype(np.uint8)
 
             # Minimal frame validation
             if frame is None or frame.size == 0:
