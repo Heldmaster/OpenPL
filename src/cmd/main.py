@@ -30,6 +30,7 @@ if __name__ == "__main__":
         platform = AprilTagPlatform(
             tags,
             logger,
+            config,
         )
         landingStrategy = MavlinkLandingStrategy(logger, config)
 

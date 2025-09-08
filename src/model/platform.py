@@ -22,14 +22,15 @@ class AprilTagPlatform(Platform):
         self,
         tags: dict,
         logger: logging.Logger,
+        config: dict,
     ) -> None:
         self.detector: pupil_apriltags.Detector = pupil_apriltags.Detector(
-            families="tag36h11",
-            nthreads=1,
-            quad_decimate=1.0,
-            quad_sigma=0.0,
-            refine_edges=1,
-            decode_sharpening=0.25,
+            families=config["apriltag_detector"]["families"],
+            nthreads=config["apriltag_detector"]["nthreads"],
+            quad_decimate=config["apriltag_detector"]["quad_decimate"],
+            quad_sigma=config["apriltag_detector"]["quad_sigma"],
+            refine_edges=config["apriltag_detector"]["refine_edges"],
+            decode_sharpening=config["apriltag_detector"]["decode_sharpening"],
             debug=0,
         )
         self.tags = tags
