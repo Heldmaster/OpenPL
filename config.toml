@@ -6,6 +6,7 @@ type = "imagezmq"
 index = 0
 imagezmq_listen_uri = "tcp://127.0.0.1:5555"
 rtsp_url = ""
+mjpg_compression = true
 
 [camera_matrix]
 # Focal length

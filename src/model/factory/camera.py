@@ -18,14 +18,14 @@ class StreamCameraFactory(AbstractCameraFactory):
         self, type: str, logger: logging.Logger, camera_matrix: np.ndarray, config: dict
     ) -> Camera:
         if type == "default":
-            return DefaultCamera(config["camera"]["index"], camera_matrix, logger)
+            return DefaultCamera(config["camera"]["index"], camera_matrix, logger, config)
         elif type == "imagezmq":
             return ImageZMQCamera(
-                config["camera"]["imagezmq_listen_uri"], camera_matrix, logger
+                config["camera"]["imagezmq_listen_uri"], camera_matrix, logger, config
             )
         elif type == "rtsp":
             return RTSPCamera(
-                config["camera"]["rtsp_url"], camera_matrix, logger
+                config["camera"]["rtsp_url"], camera_matrix, logger, config
             )
         else:
             raise CameraError(f"Unknown camera type: {type}")

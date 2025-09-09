@@ -21,15 +21,20 @@ class Camera(ABC):
 
 class DefaultCamera(Camera):
     def __init__(
-        self, cameraIndex: int, cameraMatrix: np.ndarray, logger: logging.Logger
+        self, cameraIndex: int, cameraMatrix: np.ndarray, logger: logging.Logger, config: dict
     ) -> None:
         self.cameraIndex = cameraIndex
         self.cameraMatrix = cameraMatrix
         self.logger = logger
+        self.config = config
 
         self._lock = threading.Lock()
 
-        self.cap: cv2.VideoCapture = cv2.VideoCapture(self.cameraIndex)
+        self.cap: cv2.VideoCapture = cv2.VideoCapture(self.cameraIndex, cv2.CAP_V4L2)
+        if config["camera"]["mjpg_compression"]:
+            self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
+        self.cap.set(cv2.CAP_PROP_FPS, 999)
+
         if not self.cap.isOpened():
             self.logger.error("Cannot open camera.")
             raise CameraError(f"Cannot open camera at index {self.cameraIndex}.")
@@ -58,7 +63,7 @@ class DefaultCamera(Camera):
 
 class ImageZMQCamera(Camera):
     def __init__(
-        self, listen_uri: str, cameraMatrix: np.ndarray, logger: logging.Logger
+        self, listen_uri: str, cameraMatrix: np.ndarray, logger: logging.Logger, config: dict
     ) -> None:
         self.listen_uri = listen_uri
         self.cameraMatrix = cameraMatrix
@@ -110,7 +115,7 @@ class ImageZMQCamera(Camera):
 
 class RTSPCamera(Camera):
     def __init__(
-        self, rtsp_url: str, cameraMatrix: np.ndarray, logger: logging.Logger
+        self, rtsp_url: str, cameraMatrix: np.ndarray, logger: logging.Logger, config: dict
     ) -> None:
         self.rtsp_url = rtsp_url
         self.cameraMatrix = cameraMatrix
