@@ -8,3 +8,4 @@ numpy
 vidgear
 pyserial
 serial
+setuptools
