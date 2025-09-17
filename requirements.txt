@@ -6,3 +6,5 @@ toml
 imagezmq
 numpy
 vidgear
+pyserial
+serial
