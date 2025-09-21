@@ -18,7 +18,6 @@ a = Analysis(
                    'vidgear',
                    'vidgear.gears',
                    'pupil_apriltags',
-                   'serial',
                    'pyserial',
                    ],
     hookspath=[],
